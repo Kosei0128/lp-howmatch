@@ -28,6 +28,8 @@ import {
   optionGuide,
   pageCountHint,
   pageCountLabel,
+  photoSelectionHint,
+  photoUnitPriceLabel,
   photoModeGuide,
   seniorLaunchDiscountLabel,
   seniorProductionDiscountLabel,
@@ -273,10 +275,21 @@ export function EstimateInputs({
           {input.photoMode === "stock" && (
             <div className="space-y-4 rounded-xl bg-neutral-50 p-4">
               <div className="space-y-2">
-                <FieldLabel htmlFor="heroImageCount">
-                  {heroImageCountLabel(input.heroImageCount)}
-                </FieldLabel>
-                <FieldHint>{hints.heroImages}</FieldHint>
+                <div className="flex items-start justify-between gap-3">
+                  <FieldLabel htmlFor="heroImageCount">
+                    {heroImageCountLabel(input.heroImageCount)}
+                  </FieldLabel>
+                  <span className="shrink-0 text-xs font-medium tabular-nums text-neutral-600">
+                    {photoUnitPriceLabel(pricingConfig.photos.heroPerImage)}
+                  </span>
+                </div>
+                <FieldHint>
+                  {photoSelectionHint(
+                    hints.heroImages,
+                    input.heroImageCount,
+                    pricingConfig.photos.heroPerImage,
+                  )}
+                </FieldHint>
                 <RangeInput
                   id="heroImageCount"
                   min={0}
@@ -286,10 +299,21 @@ export function EstimateInputs({
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel htmlFor="contentImageCount">
-                  {contentImageCountLabel(input.contentImageCount)}
-                </FieldLabel>
-                <FieldHint>{hints.contentImages}</FieldHint>
+                <div className="flex items-start justify-between gap-3">
+                  <FieldLabel htmlFor="contentImageCount">
+                    {contentImageCountLabel(input.contentImageCount)}
+                  </FieldLabel>
+                  <span className="shrink-0 text-xs font-medium tabular-nums text-neutral-600">
+                    {photoUnitPriceLabel(pricingConfig.photos.contentPerImage)}
+                  </span>
+                </div>
+                <FieldHint>
+                  {photoSelectionHint(
+                    hints.contentImages,
+                    input.contentImageCount,
+                    pricingConfig.photos.contentPerImage,
+                  )}
+                </FieldHint>
                 <RangeInput
                   id="contentImageCount"
                   min={0}

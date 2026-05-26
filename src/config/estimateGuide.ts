@@ -79,6 +79,8 @@ export const estimateCopy = {
     maintenanceNonePrice: "契約なし",
     perMonth: "円/月",
     perYear: "円/年",
+    perImage: "円 / 枚",
+    subtotal: "小計",
     addonYen: "円）",
     addonYenOpen: "（+",
   },
@@ -446,6 +448,23 @@ export function heroImageCountLabel(count: number): string {
 
 export function contentImageCountLabel(count: number): string {
   return `${estimateCopy.labels.contentImages}（${count} 枚）`;
+}
+
+export function photoUnitPriceLabel(unitPrice: number): string {
+  return `¥${unitPrice.toLocaleString()} ${estimateCopy.labels.perImage}`;
+}
+
+export function photoSelectionHint(
+  description: string,
+  count: number,
+  unitPrice: number,
+): string {
+  const unit = photoUnitPriceLabel(unitPrice);
+  if (count === 0) {
+    return `${description}（${unit}）`;
+  }
+  const subtotal = (count * unitPrice).toLocaleString();
+  return `${description}（${unit} → ${estimateCopy.labels.subtotal} ¥${subtotal}）`;
 }
 
 export function maintenanceMonthsLabel(months: number): string {
