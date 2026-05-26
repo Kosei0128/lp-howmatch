@@ -12,22 +12,31 @@ import {
   SelectInput,
 } from "@/components/estimate/estimate-ui";
 import {
+  addonPriceLabel,
   businessPageHint,
   clientTypeGuide,
+  contentImageCountLabel,
   designQualityGuide,
+  domainActualOptionLabel,
+  estimateCopy,
+  heroImageCountLabel,
   launchGuide,
   maintenanceGuide,
   maintenanceMonthsHint,
+  maintenanceMonthsLabel,
+  maintenancePriceLabel,
   optionGuide,
   pageCountHint,
+  pageCountLabel,
   photoModeGuide,
-  sectionGuides,
+  seniorLaunchDiscountLabel,
+  seniorProductionDiscountLabel,
   siteTypeGuide,
+  siteTypeLabels,
   toneAdjustHint,
 } from "@/config/estimateGuide";
 import {
   optionLabels,
-  siteTypeLabels,
   type DesignQuality,
   type DomainTld,
   type MaintenancePlan,
@@ -60,6 +69,8 @@ export function EstimateInputs({
   ];
   const selectedSiteGuide = siteTypeGuide[input.siteType];
 
+  const { preset, sections, labels, hints } = estimateCopy;
+
   const toggleOption = (key: OptionKey) => {
     onChange({
       options: { ...input.options, [key]: !input.options[key] },
@@ -70,27 +81,24 @@ export function EstimateInputs({
     <div className="space-y-6 sm:space-y-8">
       <details className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
         <summary className="cursor-pointer text-sm font-medium">
-          参考事例：LUXE HOLDINGS 相当
+          {preset.title}
         </summary>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-neutral-600">
-          <p>
-            ページ10・事業6・管理画面・SEO・オリジナルデザイン。
-            通常見積の目安は約 ¥350,000。初回制作の特別価格（¥40,000）は参考事例であり、通常見積には含みません。
-          </p>
+          <p>{preset.body}</p>
           <button
             type="button"
             onClick={onApplyPreset}
             className="min-h-11 w-full rounded-xl border border-neutral-900 px-4 py-2.5 text-sm transition active:bg-neutral-900 active:text-white sm:w-auto"
           >
-            この構成を読み込む
+            {preset.applyButton}
           </button>
         </div>
       </details>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
-        <Section title="基本情報" description={sectionGuides.basic}>
+        <Section title={sections.basic.title} description={sections.basic.description}>
           <div className="space-y-2">
-            <FieldLabel>クライアント種別</FieldLabel>
+            <FieldLabel>{labels.clientType}</FieldLabel>
             <div className="grid gap-2 sm:grid-cols-2">
               {(["normal", "senior"] as ClientType[]).map((type) => (
                 <button
@@ -122,12 +130,10 @@ export function EstimateInputs({
 
           {input.clientType === "senior" && (
             <div className="space-y-4 rounded-xl bg-neutral-50 p-4">
-              <FieldHint>
-                制作費・機能オプションに同じ割引率が適用されます。公開・保守は別率です。
-              </FieldHint>
+              <FieldHint>{hints.seniorDiscount}</FieldHint>
               <div className="space-y-2">
                 <FieldLabel htmlFor="seniorProductionPercentOff">
-                  制作費・オプション割引 {input.seniorProductionPercentOff}% OFF
+                  {seniorProductionDiscountLabel(input.seniorProductionPercentOff)}
                 </FieldLabel>
                 <RangeInput
                   id="seniorProductionPercentOff"
@@ -145,7 +151,7 @@ export function EstimateInputs({
               </div>
               <div className="space-y-2">
                 <FieldLabel htmlFor="seniorLaunchMaintenancePercentOff">
-                  公開・保守割引 {input.seniorLaunchMaintenancePercentOff}% OFF
+                  {seniorLaunchDiscountLabel(input.seniorLaunchMaintenancePercentOff)}
                 </FieldLabel>
                 <RangeInput
                   id="seniorLaunchMaintenancePercentOff"
@@ -167,7 +173,7 @@ export function EstimateInputs({
           )}
 
           <div className="space-y-2">
-            <FieldLabel htmlFor="siteType">サイト種別</FieldLabel>
+            <FieldLabel htmlFor="siteType">{labels.siteType}</FieldLabel>
             <SelectInput
               id="siteType"
               value={input.siteType}
@@ -186,10 +192,10 @@ export function EstimateInputs({
           </div>
         </Section>
 
-        <Section title="ページ・規模" description={sectionGuides.pages}>
+        <Section title={sections.pages.title} description={sections.pages.description}>
           <div className="space-y-2">
             <FieldLabel htmlFor="pageCount">
-              固定ページ {input.pageCount} ページ
+              {pageCountLabel(input.pageCount)}
             </FieldLabel>
             <FieldHint>{pageCountHint}</FieldHint>
             <RangeInput
@@ -202,7 +208,7 @@ export function EstimateInputs({
           </div>
 
           <div className="space-y-2">
-            <FieldLabel htmlFor="businessPageCount">事業詳細ページ数</FieldLabel>
+            <FieldLabel htmlFor="businessPageCount">{labels.businessPageCount}</FieldLabel>
             <FieldHint>{businessPageHint}</FieldHint>
             <NumberInput
               id="businessPageCount"
@@ -219,9 +225,9 @@ export function EstimateInputs({
           </div>
         </Section>
 
-        <Section title="デザイン・素材" description={sectionGuides.design}>
+        <Section title={sections.design.title} description={sections.design.description}>
           <div className="space-y-2">
-            <FieldLabel>デザイン品質</FieldLabel>
+            <FieldLabel>{labels.designQuality}</FieldLabel>
             <div className="grid gap-2">
               {(Object.keys(designQualityGuide) as DesignQuality[]).map(
                 (key) => {
@@ -234,7 +240,7 @@ export function EstimateInputs({
                       selected={input.designQuality === key}
                       title={guide.title}
                       summary={guide.summary}
-                      includes={guide.includes}
+                      includes={"includes" in guide ? guide.includes : undefined}
                       onChange={(designQuality) => onChange({ designQuality })}
                     />
                   );
@@ -244,7 +250,7 @@ export function EstimateInputs({
           </div>
 
           <div className="space-y-2">
-            <FieldLabel>写真・ビジュアル素材</FieldLabel>
+            <FieldLabel>{labels.photoMaterial}</FieldLabel>
             <div className="grid gap-2">
               {(["client", "stock"] as PhotoMaterialMode[]).map((mode) => {
                 const guide = photoModeGuide[mode];
@@ -256,7 +262,7 @@ export function EstimateInputs({
                     selected={input.photoMode === mode}
                     title={guide.title}
                     summary={guide.summary}
-                    includes={guide.includes}
+                    includes={"includes" in guide ? guide.includes : undefined}
                     onChange={(photoMode) => onChange({ photoMode })}
                   />
                 );
@@ -268,9 +274,9 @@ export function EstimateInputs({
             <div className="space-y-4 rounded-xl bg-neutral-50 p-4">
               <div className="space-y-2">
                 <FieldLabel htmlFor="heroImageCount">
-                  背景・ヒーロー（{input.heroImageCount} 枚）
+                  {heroImageCountLabel(input.heroImageCount)}
                 </FieldLabel>
-                <FieldHint>トップや各ページ上部の大きな印象画像です。</FieldHint>
+                <FieldHint>{hints.heroImages}</FieldHint>
                 <RangeInput
                   id="heroImageCount"
                   min={0}
@@ -281,9 +287,9 @@ export function EstimateInputs({
               </div>
               <div className="space-y-2">
                 <FieldLabel htmlFor="contentImageCount">
-                  事業・コンテンツ（{input.contentImageCount} 枚）
+                  {contentImageCountLabel(input.contentImageCount)}
                 </FieldLabel>
-                <FieldHint>サービス紹介や説明ブロックで使う写真です。</FieldHint>
+                <FieldHint>{hints.contentImages}</FieldHint>
                 <RangeInput
                   id="contentImageCount"
                   min={0}
@@ -297,14 +303,14 @@ export function EstimateInputs({
               <CheckboxRow
                 checked={input.toneAdjust}
                 onChange={(toneAdjust) => onChange({ toneAdjust })}
-                title={`加工・トーン合わせ（+${pricingConfig.photos.toneAdjust.toLocaleString()} 円）`}
+                title={addonPriceLabel(labels.toneAdjust, pricingConfig.photos.toneAdjust)}
                 description={toneAdjustHint}
               />
             </div>
           )}
         </Section>
 
-        <Section title="機能オプション" description={sectionGuides.options}>
+        <Section title={sections.options.title} description={sections.options.description}>
           <div className="grid gap-2">
             {optionKeys.map((key) => {
               const guide = optionGuide[key];
@@ -313,7 +319,7 @@ export function EstimateInputs({
                   key={key}
                   checked={input.options[key]}
                   onChange={() => toggleOption(key)}
-                  title={`${guide.title}（+${pricingConfig.options[key].toLocaleString()} 円）`}
+                  title={addonPriceLabel(guide.title, pricingConfig.options[key])}
                   description={guide.summary}
                   includes={guide.includes}
                 />
@@ -322,11 +328,11 @@ export function EstimateInputs({
           </div>
         </Section>
 
-        <Section title="公開・運用" description={sectionGuides.launch}>
+        <Section title={sections.launch.title} description={sections.launch.description}>
           <CheckboxRow
             checked={input.launchBundle}
             onChange={(launchBundle) => onChange({ launchBundle })}
-            title={`${launchGuide.bundle.title}（+${pricingConfig.launch.launchBundle.toLocaleString()} 円）`}
+            title={addonPriceLabel(launchGuide.bundle.title, pricingConfig.launch.launchBundle)}
             description={launchGuide.bundle.summary}
             includes={launchGuide.bundle.includes}
           />
@@ -336,13 +342,19 @@ export function EstimateInputs({
               <CheckboxRow
                 checked={input.domainProxy}
                 onChange={(domainProxy) => onChange({ domainProxy })}
-                title={`${launchGuide.domainProxy.title}（+${pricingConfig.launch.domainProxy.toLocaleString()} 円）`}
+                title={addonPriceLabel(
+                  launchGuide.domainProxy.title,
+                  pricingConfig.launch.domainProxy,
+                )}
                 description={launchGuide.domainProxy.summary}
               />
               <CheckboxRow
                 checked={input.vercelSetup}
                 onChange={(vercelSetup) => onChange({ vercelSetup })}
-                title={`${launchGuide.vercelSetup.title}（+${pricingConfig.launch.vercelSetup.toLocaleString()} 円）`}
+                title={addonPriceLabel(
+                  launchGuide.vercelSetup.title,
+                  pricingConfig.launch.vercelSetup,
+                )}
                 description={launchGuide.vercelSetup.summary}
               />
             </div>
@@ -350,10 +362,8 @@ export function EstimateInputs({
 
           {(input.domainProxy || input.launchBundle) && (
             <div className="space-y-2">
-              <FieldLabel htmlFor="domainTld">ドメイン TLD</FieldLabel>
-              <FieldHint>
-                サイトのアドレス末尾（.jp や .com）。実費はレジストラの年間料金で、別途加算されます。
-              </FieldHint>
+              <FieldLabel htmlFor="domainTld">{labels.domainTld}</FieldLabel>
+              <FieldHint>{hints.domainTld}</FieldHint>
               <SelectInput
                 id="domainTld"
                 value={input.domainTld}
@@ -362,12 +372,16 @@ export function EstimateInputs({
                 }
               >
                 <option value="jp">
-                  .jp（実費{" "}
-                  {pricingConfig.launch.domainActual.jp.toLocaleString()} 円/年）
+                  {domainActualOptionLabel(
+                    "jp",
+                    pricingConfig.launch.domainActual.jp,
+                  )}
                 </option>
                 <option value="com">
-                  .com（実費{" "}
-                  {pricingConfig.launch.domainActual.com.toLocaleString()} 円/年）
+                  {domainActualOptionLabel(
+                    "com",
+                    pricingConfig.launch.domainActual.com,
+                  )}
                 </option>
               </SelectInput>
             </div>
@@ -375,18 +389,16 @@ export function EstimateInputs({
 
           <div className="space-y-3">
             <div className="space-y-1">
-              <FieldLabel>保守プラン（公開後のサポート）</FieldLabel>
-              <FieldHint>
-                サイト公開後、更新・監視・障害対応などをどこまで任せるか選びます。内容の違いは各プランをご確認ください。
-              </FieldHint>
+              <FieldLabel>{labels.maintenancePlan}</FieldLabel>
+              <FieldHint>{hints.maintenancePlan}</FieldHint>
             </div>
             <div className="grid gap-2">
               {maintenancePlans.map((plan) => {
                 const guide = maintenanceGuide[plan];
-                const priceLabel =
-                  plan === "none"
-                    ? "契約なし"
-                    : `${pricingConfig.maintenance[plan].toLocaleString()} 円/月`;
+                const priceLabel = maintenancePriceLabel(
+                  plan,
+                  pricingConfig.maintenance[plan],
+                );
                 return (
                   <PlanCard
                     key={plan}
@@ -396,7 +408,7 @@ export function EstimateInputs({
                     title={guide.title}
                     priceLabel={priceLabel}
                     summary={guide.summary}
-                    includes={guide.includes}
+                    includes={"includes" in guide ? guide.includes : undefined}
                     onChange={(maintenancePlan) =>
                       onChange({ maintenancePlan })
                     }
@@ -409,7 +421,7 @@ export function EstimateInputs({
           {input.maintenancePlan !== "none" && (
             <div className="space-y-2">
               <FieldLabel htmlFor="maintenanceMonths">
-                保守期間 {input.maintenanceMonths} ヶ月
+                {maintenanceMonthsLabel(input.maintenanceMonths)}
               </FieldLabel>
               <FieldHint>{maintenanceMonthsHint}</FieldHint>
               <RangeInput

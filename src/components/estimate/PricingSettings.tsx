@@ -4,6 +4,7 @@ import {
   SettingsField,
   SettingsGroup,
 } from "@/components/estimate/estimate-ui";
+import { estimateCopy } from "@/config/estimateGuide";
 import {
   designQualityLabels,
   maintenanceLabels,
@@ -32,6 +33,7 @@ function updateNested<K extends keyof PricingConfig>(
 }
 
 export function PricingSettings({ config, onChange }: PricingSettingsProps) {
+  const { pricingSettings: copy } = estimateCopy;
   const optionKeys = Object.keys(optionLabels) as OptionKey[];
   const designKeys = Object.keys(designQualityLabels) as DesignQuality[];
   const maintenanceKeys = Object.keys(maintenanceLabels) as Array<
@@ -53,10 +55,8 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
       <summary className="cursor-pointer list-none px-4 py-4 sm:px-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium">料金表の編集</p>
-            <p className="mt-1 text-xs text-neutral-500">
-              単価・割引率をここで変更。保存はこの端末のブラウザに記憶されます。
-            </p>
+            <p className="text-sm font-medium">{copy.title}</p>
+            <p className="mt-1 text-xs text-neutral-500">{copy.description}</p>
           </div>
           <span className="text-neutral-400" aria-hidden>
             ▼
@@ -65,10 +65,10 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
       </summary>
 
       <div className="space-y-4 border-t border-neutral-100 px-4 py-4 sm:px-5 sm:py-5">
-        <SettingsGroup title="制作ベース（円）">
+        <SettingsGroup title={copy.groups.base}>
           <SettingsField
             id="base-lp"
-            label="シンプルLP"
+            label={copy.fields.baseLp}
             value={config.base.lp}
             onChange={(lp) =>
               patch(updateNested(config, "base", { ...config.base, lp }))
@@ -76,7 +76,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="base-small"
-            label="小規模コーポレート"
+            label={copy.fields.baseSmall}
             value={config.base.small}
             onChange={(small) =>
               patch(updateNested(config, "base", { ...config.base, small }))
@@ -84,7 +84,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="base-corporate"
-            label="中規模コーポレート"
+            label={copy.fields.baseCorporate}
             value={config.base.corporate}
             onChange={(corporate) =>
               patch(
@@ -94,7 +94,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="perPage-fixed"
-            label="固定ページ（1枚）"
+            label={copy.fields.fixedPage}
             value={config.perPage.fixed}
             onChange={(fixed) =>
               patch(
@@ -104,7 +104,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="perPage-business"
-            label="事業詳細ページ（1枚）"
+            label={copy.fields.businessPage}
             value={config.perPage.business}
             onChange={(business) =>
               patch(
@@ -117,7 +117,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
         </SettingsGroup>
 
-        <SettingsGroup title="デザイン倍率（1.0 = 100%）">
+        <SettingsGroup title={copy.groups.design}>
           {designKeys.map((key) => (
             <SettingsField
               key={key}
@@ -137,11 +137,11 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           ))}
         </SettingsGroup>
 
-        <SettingsGroup title="先輩割（デフォルト % OFF）">
+        <SettingsGroup title={copy.groups.senior}>
           <SettingsField
             id="senior-production"
-            label="制作費・オプション"
-            suffix="% OFF"
+            label={copy.fields.seniorProduction}
+            suffix={copy.suffixPercentOff}
             value={config.seniorDiscount.productionPercentOff}
             onChange={(productionPercentOff) =>
               patch(
@@ -154,8 +154,8 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="senior-launch"
-            label="公開・保守"
-            suffix="% OFF"
+            label={copy.fields.seniorLaunch}
+            suffix={copy.suffixPercentOff}
             value={config.seniorDiscount.launchMaintenancePercentOff}
             onChange={(launchMaintenancePercentOff) =>
               patch(
@@ -168,10 +168,10 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
         </SettingsGroup>
 
-        <SettingsGroup title="写真・素材（円）">
+        <SettingsGroup title={copy.groups.photos}>
           <SettingsField
             id="photo-hero"
-            label="ヒーロー画像（1枚）"
+            label={copy.fields.heroImage}
             value={config.photos.heroPerImage}
             onChange={(heroPerImage) =>
               patch(
@@ -184,7 +184,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="photo-content"
-            label="コンテンツ画像（1枚）"
+            label={copy.fields.contentImage}
             value={config.photos.contentPerImage}
             onChange={(contentPerImage) =>
               patch(
@@ -197,7 +197,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="photo-tone"
-            label="加工・トーン合わせ"
+            label={copy.fields.toneAdjust}
             value={config.photos.toneAdjust}
             onChange={(toneAdjust) =>
               patch(
@@ -210,7 +210,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
         </SettingsGroup>
 
-        <SettingsGroup title="機能オプション（円）">
+        <SettingsGroup title={copy.groups.options}>
           {optionKeys.map((key) => (
             <SettingsField
               key={key}
@@ -229,10 +229,10 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           ))}
         </SettingsGroup>
 
-        <SettingsGroup title="公開・運用（円）">
+        <SettingsGroup title={copy.groups.launch}>
           <SettingsField
             id="launch-domain"
-            label="ドメイン取得代行"
+            label={copy.fields.domainProxy}
             value={config.launch.domainProxy}
             onChange={(domainProxy) =>
               patch(
@@ -245,7 +245,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="launch-vercel"
-            label="Vercel設定"
+            label={copy.fields.vercelSetup}
             value={config.launch.vercelSetup}
             onChange={(vercelSetup) =>
               patch(
@@ -258,7 +258,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="launch-bundle"
-            label="公開セット"
+            label={copy.fields.launchBundle}
             value={config.launch.launchBundle}
             onChange={(launchBundle) =>
               patch(
@@ -271,7 +271,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="domain-jp"
-            label="ドメイン実費 .jp（年）"
+            label={copy.fields.domainJp}
             value={config.launch.domainActual.jp}
             onChange={(jp) =>
               patch(
@@ -284,7 +284,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           />
           <SettingsField
             id="domain-com"
-            label="ドメイン実費 .com（年）"
+            label={copy.fields.domainCom}
             value={config.launch.domainActual.com}
             onChange={(com) =>
               patch(
@@ -299,7 +299,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
             <SettingsField
               key={key}
               id={`maintenance-${key}`}
-              label={`保守 ${maintenanceLabels[key]}（月）`}
+              label={`${copy.fields.maintenance} ${maintenanceLabels[key]}（月）`}
               value={config.maintenance[key]}
               onChange={(value) =>
                 patch(
@@ -318,7 +318,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
           onClick={handleReset}
           className="min-h-11 w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm transition hover:border-neutral-500"
         >
-          料金表を初期値に戻す
+          {copy.reset}
         </button>
       </div>
     </details>

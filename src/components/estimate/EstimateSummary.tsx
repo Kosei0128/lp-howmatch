@@ -1,7 +1,10 @@
 "use client";
 
 import { InfoPanel } from "@/components/estimate/estimate-ui";
-import { howToReadSummary } from "@/config/estimateGuide";
+import {
+  estimateCopy,
+  seniorDiscountSummary,
+} from "@/config/estimateGuide";
 import { percentOffToMultiplier } from "@/config/pricing";
 import {
   formatYen,
@@ -69,18 +72,20 @@ function BreakdownCards({
 
 function BreakdownTable({
   lines,
+  headers,
 }: {
   lines: EstimateBreakdown["lines"];
+  headers: typeof estimateCopy.summary.breakdownHeaders;
 }) {
   return (
     <div className="hidden overflow-x-auto lg:block">
       <table className="w-full min-w-[420px] text-left text-xs">
         <thead>
           <tr className="border-b border-neutral-200 text-neutral-500">
-            <th className="pb-2 pr-2 font-medium">項目</th>
-            <th className="pb-2 pr-2 font-medium">単価</th>
-            <th className="pb-2 pr-2 font-medium">数量</th>
-            <th className="pb-2 font-medium">小計</th>
+            <th className="pb-2 pr-2 font-medium">{headers.item}</th>
+            <th className="pb-2 pr-2 font-medium">{headers.unit}</th>
+            <th className="pb-2 pr-2 font-medium">{headers.qty}</th>
+            <th className="pb-2 font-medium">{headers.subtotal}</th>
           </tr>
         </thead>
         <tbody>
@@ -107,6 +112,7 @@ export function EstimateSummary({
   variant = "full",
 }: EstimateSummaryProps) {
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const { summary } = estimateCopy;
   const isSenior = input.clientType === "senior";
   const displayTotal = isSenior
     ? breakdown.totalWithSeniorDiscount
@@ -143,7 +149,7 @@ export function EstimateSummary({
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs text-neutral-500">
-            {isSenior ? "先輩割適用・税抜" : "合計（税抜）"}
+            {isSenior ? summary.totalCompactSenior : summary.totalCompactNormal}
           </p>
           {isSenior ? (
             <div className="flex items-baseline gap-2">
@@ -165,7 +171,9 @@ export function EstimateSummary({
           onClick={onCopyMemo}
           className="min-h-11 shrink-0 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm text-white active:bg-neutral-700"
         >
-          {copyStatus === "copied" ? "コピー済" : "メモコピー"}
+          {copyStatus === "copied"
+            ? summary.copyMemoCompactDone
+            : summary.copyMemoCompact}
         </button>
       </div>
     );
@@ -174,51 +182,53 @@ export function EstimateSummary({
   return (
     <div className="space-y-4 lg:space-y-6">
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="font-en mb-1 text-lg font-medium">見積サマリー</h2>
+        <h2 className="font-en mb-1 text-lg font-medium">{summary.title}</h2>
         <p className="mb-4 text-xs leading-relaxed text-neutral-500">
-          左で選んだ内容がリアルタイムで反映されます。税抜の目安金額です。
+          {summary.intro}
         </p>
 
         <div className="divide-y divide-neutral-100">
-          <SummaryRow label="制作費（初期）" amount={productionDisplay} />
-          <SummaryRow label="写真・素材代行" amount={breakdown.subtotalPhotos} />
-          <SummaryRow label="機能オプション" amount={optionsDisplay} />
-          <SummaryRow label="公開費用（一回）" amount={launchDisplay} />
+          <SummaryRow label={summary.rows.production} amount={productionDisplay} />
+          <SummaryRow label={summary.rows.photos} amount={breakdown.subtotalPhotos} />
+          <SummaryRow label={summary.rows.options} amount={optionsDisplay} />
+          <SummaryRow label={summary.rows.launch} amount={launchDisplay} />
           {breakdown.domainActual > 0 && (
             <SummaryRow
-              label="ドメイン実費（年）"
+              label={summary.rows.domainActual}
               amount={breakdown.domainActual}
               muted
             />
           )}
-          <SummaryRow label="保守" amount={maintenanceDisplay} />
+          <SummaryRow label={summary.rows.maintenance} amount={maintenanceDisplay} />
         </div>
 
         <div className="mt-4 border-t border-neutral-200 pt-4 sm:mt-6">
           {isSenior ? (
             <div className="space-y-1">
               <div className="flex items-center justify-between gap-3 text-neutral-400">
-                <span className="text-sm">合計（通常）</span>
+                <span className="text-sm">{summary.totalBeforeDiscount}</span>
                 <span className="font-en text-sm tabular-nums line-through">
                   {formatYen(breakdown.total)}
                 </span>
               </div>
               <div className="flex items-start justify-between gap-3">
                 <span className="text-base font-medium leading-snug">
-                  合計（先輩割・税抜）
+                  {summary.totalSenior}
                 </span>
                 <span className="font-en text-2xl font-semibold tabular-nums sm:text-xl">
                   {formatYen(displayTotal)}
                 </span>
               </div>
               <p className="text-xs text-neutral-500">
-                制作費・オプション {input.seniorProductionPercentOff}% OFF / 公開・保守{" "}
-                {input.seniorLaunchMaintenancePercentOff}% OFF
+                {seniorDiscountSummary(
+                  input.seniorProductionPercentOff,
+                  input.seniorLaunchMaintenancePercentOff,
+                )}
               </p>
             </div>
           ) : (
             <div className="flex items-start justify-between gap-3">
-              <span className="text-base font-medium">合計（税抜）</span>
+              <span className="text-base font-medium">{summary.totalNormal}</span>
               <span className="font-en text-2xl font-semibold tabular-nums sm:text-xl">
                 {formatYen(displayTotal)}
               </span>
@@ -232,20 +242,20 @@ export function EstimateSummary({
             onClick={onCopyMemo}
             className="min-h-11 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm text-white transition hover:bg-neutral-700"
           >
-            {copyStatus === "copied" ? "コピーしました" : "見積メモをコピー"}
+            {copyStatus === "copied" ? summary.copyMemoDone : summary.copyMemo}
           </button>
           <button
             type="button"
             onClick={onReset}
             className="min-h-11 rounded-xl border border-neutral-300 px-5 py-2.5 text-sm transition hover:border-neutral-500"
           >
-            リセット
+            {summary.reset}
           </button>
         </div>
       </div>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
-        <InfoPanel title="見積の読み方" items={howToReadSummary} />
+        <InfoPanel title={summary.howToReadTitle} items={summary.howToReadItems} />
       </div>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
@@ -255,14 +265,17 @@ export function EstimateSummary({
           className="flex min-h-11 w-full items-center justify-between text-sm font-medium"
           aria-expanded={showBreakdown}
         >
-          内訳を見る
+          {summary.breakdownToggle}
           <span className="text-neutral-400">{showBreakdown ? "−" : "+"}</span>
         </button>
 
         {showBreakdown && (
           <div className="mt-4">
             <BreakdownCards lines={breakdown.lines} />
-            <BreakdownTable lines={breakdown.lines} />
+            <BreakdownTable
+              lines={breakdown.lines}
+              headers={summary.breakdownHeaders}
+            />
           </div>
         )}
       </div>

@@ -105,37 +105,15 @@ export const pricing: PricingConfig = {
   },
 };
 
-export const optionLabels: Record<OptionKey, string> = {
-  contactForm: "お問い合わせフォーム",
-  faq: "FAQ",
-  news: "ニュース / お知らせ",
-  english: "英語版",
-  seo: "SEO基本設定",
-  cms: "管理画面（簡易CMS）",
-  multiStore: "サブドメイン / 多店舗",
-};
-
-export const siteTypeLabels: Record<SiteType, string> = {
-  lp: "シンプルLP",
-  small: "小規模コーポレート",
-  corporate: "中規模コーポレート",
-};
-
-export const designQualityLabels: Record<DesignQuality, string> = {
-  template: "テンプレベース",
-  original: "オリジナル",
-  premium: "高品質",
-};
-
-export const maintenanceLabels: Record<Exclude<MaintenancePlan, "none">, string> =
-  {
-    light: "ライト",
-    standard: "標準",
-    full: "フル",
-  };
-
 /** 割引率（% OFF）→ 請求倍率（45% OFF → 0.55） */
 export function percentOffToMultiplier(percentOff: number): number {
   const clamped = Math.max(0, Math.min(100, percentOff));
   return 1 - clamped / 100;
 }
+
+export {
+  designQualityLabels,
+  maintenanceLabels,
+  optionLabels,
+  siteTypeLabels,
+} from "@/config/estimateGuide";

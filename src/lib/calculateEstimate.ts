@@ -1,4 +1,13 @@
 import {
+  baseSiteLabel,
+  designAdjustLabel,
+  domainActualBreakdownLabel,
+  estimateCopy,
+  maintenanceBreakdownLabel,
+  seniorDiscountSummary,
+  siteTypeLabels,
+} from "@/config/estimateGuide";
+import {
   percentOffToMultiplier,
   pricing,
   type DesignQuality,
@@ -108,7 +117,7 @@ export function calculateEstimate(
   const productionAfterDesign = Math.round(productionBeforeDesign * designMultiplier);
 
   lines.push({
-    label: `ベース（${input.siteType === "lp" ? "LP" : input.siteType === "small" ? "小規模" : "中規模"}）`,
+    label: baseSiteLabel(input.siteType),
     unit: base,
     qty: 1,
     subtotal: base,
@@ -117,7 +126,7 @@ export function calculateEstimate(
 
   if (fixedPages > 0) {
     lines.push({
-      label: "固定ページ",
+      label: estimateCopy.breakdown.fixedPage,
       unit: config.perPage.fixed,
       qty: fixedPages,
       subtotal: fixedPages * config.perPage.fixed,
@@ -127,7 +136,7 @@ export function calculateEstimate(
 
   if (businessPages > 0) {
     lines.push({
-      label: "事業詳細ページ",
+      label: estimateCopy.breakdown.businessPage,
       unit: config.perPage.business,
       qty: businessPages,
       subtotal: businessPages * config.perPage.business,
@@ -137,12 +146,8 @@ export function calculateEstimate(
 
   if (designMultiplier !== 1) {
     const designAdjust = productionAfterDesign - productionBeforeDesign;
-    const pct = Math.round((designMultiplier - 1) * 100);
     lines.push({
-      label:
-        designMultiplier < 1
-          ? `テンプレベース割引（${Math.abs(pct)}%）`
-          : `高品質デザイン加算（+${pct}%）`,
+      label: designAdjustLabel(designMultiplier),
       unit: designAdjust,
       qty: 1,
       subtotal: designAdjust,
@@ -157,7 +162,7 @@ export function calculateEstimate(
     if (input.heroImageCount > 0) {
       const sub = input.heroImageCount * config.photos.heroPerImage;
       lines.push({
-        label: "背景・ヒーロー画像（ストック選定代行）",
+        label: estimateCopy.breakdown.heroStock,
         unit: config.photos.heroPerImage,
         qty: input.heroImageCount,
         subtotal: sub,
@@ -168,7 +173,7 @@ export function calculateEstimate(
     if (input.contentImageCount > 0) {
       const sub = input.contentImageCount * config.photos.contentPerImage;
       lines.push({
-        label: "事業・コンテンツ画像（ストック選定代行）",
+        label: estimateCopy.breakdown.contentStock,
         unit: config.photos.contentPerImage,
         qty: input.contentImageCount,
         subtotal: sub,
@@ -178,7 +183,7 @@ export function calculateEstimate(
     }
     if (input.toneAdjust) {
       lines.push({
-        label: "加工・トーン合わせ",
+        label: estimateCopy.breakdown.toneAdjust,
         unit: config.photos.toneAdjust,
         qty: 1,
         subtotal: config.photos.toneAdjust,
@@ -208,7 +213,7 @@ export function calculateEstimate(
 
   if (input.launchBundle) {
     lines.push({
-      label: "公開セット（ドメイン代行＋Vercel設定）",
+      label: estimateCopy.breakdown.launchBundle,
       unit: config.launch.launchBundle,
       qty: 1,
       subtotal: config.launch.launchBundle,
@@ -217,7 +222,7 @@ export function calculateEstimate(
     subtotalLaunch = config.launch.launchBundle;
     domainActual = config.launch.domainActual[input.domainTld];
     lines.push({
-      label: `ドメイン実費（.${input.domainTld} / 年）`,
+      label: domainActualBreakdownLabel(input.domainTld),
       unit: domainActual,
       qty: 1,
       subtotal: domainActual,
@@ -226,7 +231,7 @@ export function calculateEstimate(
   } else {
     if (input.domainProxy) {
       lines.push({
-        label: "ドメイン取得代行",
+        label: estimateCopy.breakdown.domainProxy,
         unit: config.launch.domainProxy,
         qty: 1,
         subtotal: config.launch.domainProxy,
@@ -235,7 +240,7 @@ export function calculateEstimate(
       subtotalLaunch += config.launch.domainProxy;
       domainActual = config.launch.domainActual[input.domainTld];
       lines.push({
-        label: `ドメイン実費（.${input.domainTld} / 年）`,
+        label: domainActualBreakdownLabel(input.domainTld),
         unit: domainActual,
         qty: 1,
         subtotal: domainActual,
@@ -244,7 +249,7 @@ export function calculateEstimate(
     }
     if (input.vercelSetup) {
       lines.push({
-        label: "Vercel公開・DNS・SSL設定",
+        label: estimateCopy.breakdown.vercelSetup,
         unit: config.launch.vercelSetup,
         qty: 1,
         subtotal: config.launch.vercelSetup,
@@ -259,7 +264,7 @@ export function calculateEstimate(
     const monthly = config.maintenance[input.maintenancePlan];
     subtotalMaintenance = monthly * input.maintenanceMonths;
     lines.push({
-      label: `保守（${input.maintenancePlan === "light" ? "ライト" : input.maintenancePlan === "standard" ? "標準" : "フル"}）`,
+      label: maintenanceBreakdownLabel(input.maintenancePlan),
       unit: monthly,
       qty: input.maintenanceMonths,
       subtotal: subtotalMaintenance,
@@ -380,45 +385,49 @@ export function buildEstimateMemo(
   const displayTotal = isSenior ? breakdown.totalWithSeniorDiscount : breakdown.total;
 
   const lines: string[] = [
-    "【Web制作 見積メモ】",
+    estimateCopy.memo.title,
     "",
-    `クライアント種別: ${isSenior ? "先輩・知人割" : "通常"}`,
+    `クライアント種別: ${isSenior ? estimateCopy.memo.clientSenior : estimateCopy.memo.clientNormal}`,
   ];
 
   if (isSenior) {
     lines.push(
-      `先輩割: 制作費・オプション ${input.seniorProductionPercentOff}% OFF / 公開・保守 ${input.seniorLaunchMaintenancePercentOff}% OFF`,
+      `先輩割: ${seniorDiscountSummary(input.seniorProductionPercentOff, input.seniorLaunchMaintenancePercentOff)}`,
     );
   }
 
   lines.push(
-    `サイト種別: ${input.siteType}`,
+    `サイト種別: ${siteTypeLabels[input.siteType]}`,
     `ページ数: ${input.pageCount} / 事業詳細: ${input.businessPageCount}`,
     `デザイン: ${input.designQuality}`,
     "",
-    "--- 内訳 ---",
-    `制作費（初期）: ${formatYen(breakdown.subtotalProduction)}`,
-    `写真・素材代行: ${formatYen(breakdown.subtotalPhotos)}`,
-    `機能オプション: ${formatYen(breakdown.subtotalOptions)}`,
-    `公開費用: ${formatYen(breakdown.subtotalLaunch)}`,
+    estimateCopy.memo.sections.breakdown,
+    `${estimateCopy.summary.rows.production}: ${formatYen(breakdown.subtotalProduction)}`,
+    `${estimateCopy.summary.rows.photos}: ${formatYen(breakdown.subtotalPhotos)}`,
+    `${estimateCopy.summary.rows.options}: ${formatYen(breakdown.subtotalOptions)}`,
+    `${estimateCopy.summary.rows.launch}: ${formatYen(breakdown.subtotalLaunch)}`,
   );
 
   if (breakdown.domainActual > 0) {
-    lines.push(`ドメイン実費（年）: ${formatYen(breakdown.domainActual)}`);
+    lines.push(
+      `${estimateCopy.summary.rows.domainActual}: ${formatYen(breakdown.domainActual)}`,
+    );
   }
 
-  lines.push(`保守: ${formatYen(breakdown.subtotalMaintenance)}`);
+  lines.push(
+    `${estimateCopy.summary.rows.maintenance}: ${formatYen(breakdown.subtotalMaintenance)}`,
+  );
   lines.push("");
 
   if (isSenior) {
-    lines.push(`合計（通常）: ${formatYen(breakdown.total)}`);
-    lines.push(`先輩割適用後: ${formatYen(displayTotal)}`);
+    lines.push(`${estimateCopy.summary.totalBeforeDiscount}: ${formatYen(breakdown.total)}`);
+    lines.push(`${estimateCopy.memo.seniorApplied}: ${formatYen(displayTotal)}`);
   } else {
-    lines.push(`合計（税抜）: ${formatYen(displayTotal)}`);
+    lines.push(`${estimateCopy.summary.totalNormal}: ${formatYen(displayTotal)}`);
   }
 
   lines.push("");
-  lines.push("※ 表示価格は目安です。正式見積はヒアリング後に確定します。");
+  lines.push(estimateCopy.memo.disclaimer);
 
   return lines.join("\n");
 }

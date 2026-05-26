@@ -310,7 +310,7 @@ export function InfoPanel({
   items,
 }: {
   title: string;
-  items: string[];
+  items: readonly string[];
 }) {
   return (
     <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
