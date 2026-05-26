@@ -2,20 +2,42 @@
 
 import { EstimateInputs } from "@/components/estimate/EstimateInputs";
 import { EstimateSummary } from "@/components/estimate/EstimateSummary";
+import { PricingSettings } from "@/components/estimate/PricingSettings";
 import {
   buildEstimateMemo,
   calculateEstimate,
-  defaultEstimateInput,
-  luxeHoldingsPreset,
+  createDefaultEstimateInput,
+  createLuxeHoldingsPreset,
   type EstimateInput,
 } from "@/lib/calculateEstimate";
-import { useMemo, useState } from "react";
+import {
+  clonePricingConfig,
+  loadPricingConfig,
+} from "@/lib/pricingStorage";
+import type { PricingConfig } from "@/config/pricing";
+import { useEffect, useMemo, useState } from "react";
 
 export function EstimateCalculator() {
-  const [input, setInput] = useState<EstimateInput>(defaultEstimateInput);
+  const [pricingConfig, setPricingConfig] = useState<PricingConfig>(() =>
+    clonePricingConfig(),
+  );
+  const [input, setInput] = useState<EstimateInput>(() =>
+    createDefaultEstimateInput(),
+  );
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+  const [ready, setReady] = useState(false);
 
-  const breakdown = useMemo(() => calculateEstimate(input), [input]);
+  useEffect(() => {
+    const saved = loadPricingConfig();
+    setPricingConfig(saved);
+    setInput(createDefaultEstimateInput(saved));
+    setReady(true);
+  }, []);
+
+  const breakdown = useMemo(
+    () => calculateEstimate(input, pricingConfig),
+    [input, pricingConfig],
+  );
 
   const handleChange = (patch: Partial<EstimateInput>) => {
     setInput((prev) => ({ ...prev, ...patch }));
@@ -30,24 +52,59 @@ export function EstimateCalculator() {
   };
 
   const handleReset = () => {
-    setInput(defaultEstimateInput);
+    setInput(createDefaultEstimateInput(pricingConfig));
     setCopyStatus("idle");
   };
 
+  if (!ready) {
+    return (
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 text-sm text-neutral-500">
+        読み込み中…
+      </div>
+    );
+  }
+
   return (
-    <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
-      <EstimateInputs
-        input={input}
-        onChange={handleChange}
-        onApplyPreset={() => setInput(luxeHoldingsPreset)}
-      />
-      <EstimateSummary
-        input={input}
-        breakdown={breakdown}
-        onCopyMemo={handleCopyMemo}
-        onReset={handleReset}
-        copyStatus={copyStatus}
-      />
-    </div>
+    <>
+      <div className="mb-6 space-y-4">
+        <PricingSettings config={pricingConfig} onChange={setPricingConfig} />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <EstimateInputs
+          input={input}
+          pricingConfig={pricingConfig}
+          onChange={handleChange}
+          onApplyPreset={() =>
+            setInput(createLuxeHoldingsPreset(pricingConfig))
+          }
+        />
+        <EstimateSummary
+          input={input}
+          breakdown={breakdown}
+          onCopyMemo={handleCopyMemo}
+          onReset={handleReset}
+          copyStatus={copyStatus}
+        />
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-neutral-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] backdrop-blur-sm pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+        <EstimateSummary
+          input={input}
+          breakdown={breakdown}
+          onCopyMemo={handleCopyMemo}
+          onReset={handleReset}
+          copyStatus={copyStatus}
+          variant="compact"
+        />
+        <button
+          type="button"
+          onClick={handleReset}
+          className="mt-2 min-h-10 w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm"
+        >
+          入力をリセット
+        </button>
+      </div>
+    </>
   );
 }

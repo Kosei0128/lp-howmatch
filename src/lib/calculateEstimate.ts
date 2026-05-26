@@ -6,6 +6,7 @@ import {
   type MaintenancePlan,
   type OptionKey,
   type PhotoMaterialMode,
+  type PricingConfig,
   type SiteType,
   optionLabels,
 } from "@/config/pricing";
@@ -56,8 +57,8 @@ export type EstimateBreakdown = {
   seniorDiscountAmount: number;
 };
 
-function getBasePrice(siteType: SiteType): number {
-  return pricing.base[siteType];
+function getBasePrice(siteType: SiteType, config: PricingConfig): number {
+  return config.base[siteType];
 }
 
 function applySeniorToProduction(amount: number, input: EstimateInput): number {
@@ -84,17 +85,20 @@ function applySeniorToLaunchMaintenance(
   return amount;
 }
 
-export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
+export function calculateEstimate(
+  input: EstimateInput,
+  config: PricingConfig = pricing,
+): EstimateBreakdown {
   const lines: EstimateLine[] = [];
 
-  const base = getBasePrice(input.siteType);
-  const designMultiplier = pricing.designMultiplier[input.designQuality];
+  const base = getBasePrice(input.siteType, config);
+  const designMultiplier = config.designMultiplier[input.designQuality];
 
   const fixedPages = Math.max(0, input.pageCount - 1);
   const businessPages = input.businessPageCount;
 
   const productionBeforeDesign =
-    base + fixedPages * pricing.perPage.fixed + businessPages * pricing.perPage.business;
+    base + fixedPages * config.perPage.fixed + businessPages * config.perPage.business;
 
   const productionAfterDesign = Math.round(productionBeforeDesign * designMultiplier);
 
@@ -109,9 +113,9 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
   if (fixedPages > 0) {
     lines.push({
       label: "固定ページ",
-      unit: pricing.perPage.fixed,
+      unit: config.perPage.fixed,
       qty: fixedPages,
-      subtotal: fixedPages * pricing.perPage.fixed,
+      subtotal: fixedPages * config.perPage.fixed,
       category: "production",
     });
   }
@@ -119,9 +123,9 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
   if (businessPages > 0) {
     lines.push({
       label: "事業詳細ページ",
-      unit: pricing.perPage.business,
+      unit: config.perPage.business,
       qty: businessPages,
-      subtotal: businessPages * pricing.perPage.business,
+      subtotal: businessPages * config.perPage.business,
       category: "production",
     });
   }
@@ -146,10 +150,10 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
   let subtotalPhotos = 0;
   if (input.photoMode === "stock") {
     if (input.heroImageCount > 0) {
-      const sub = input.heroImageCount * pricing.photos.heroPerImage;
+      const sub = input.heroImageCount * config.photos.heroPerImage;
       lines.push({
         label: "背景・ヒーロー画像（ストック選定代行）",
-        unit: pricing.photos.heroPerImage,
+        unit: config.photos.heroPerImage,
         qty: input.heroImageCount,
         subtotal: sub,
         category: "photos",
@@ -157,10 +161,10 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
       subtotalPhotos += sub;
     }
     if (input.contentImageCount > 0) {
-      const sub = input.contentImageCount * pricing.photos.contentPerImage;
+      const sub = input.contentImageCount * config.photos.contentPerImage;
       lines.push({
         label: "事業・コンテンツ画像（ストック選定代行）",
-        unit: pricing.photos.contentPerImage,
+        unit: config.photos.contentPerImage,
         qty: input.contentImageCount,
         subtotal: sub,
         category: "photos",
@@ -170,19 +174,19 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
     if (input.toneAdjust) {
       lines.push({
         label: "加工・トーン合わせ",
-        unit: pricing.photos.toneAdjust,
+        unit: config.photos.toneAdjust,
         qty: 1,
-        subtotal: pricing.photos.toneAdjust,
+        subtotal: config.photos.toneAdjust,
         category: "photos",
       });
-      subtotalPhotos += pricing.photos.toneAdjust;
+      subtotalPhotos += config.photos.toneAdjust;
     }
   }
 
   let subtotalOptions = 0;
   (Object.keys(input.options) as OptionKey[]).forEach((key) => {
     if (input.options[key]) {
-      const unit = pricing.options[key];
+      const unit = config.options[key];
       lines.push({
         label: optionLabels[key],
         unit,
@@ -200,13 +204,13 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
   if (input.launchBundle) {
     lines.push({
       label: "公開セット（ドメイン代行＋Vercel設定）",
-      unit: pricing.launch.launchBundle,
+      unit: config.launch.launchBundle,
       qty: 1,
-      subtotal: pricing.launch.launchBundle,
+      subtotal: config.launch.launchBundle,
       category: "launch",
     });
-    subtotalLaunch = pricing.launch.launchBundle;
-    domainActual = pricing.launch.domainActual[input.domainTld];
+    subtotalLaunch = config.launch.launchBundle;
+    domainActual = config.launch.domainActual[input.domainTld];
     lines.push({
       label: `ドメイン実費（.${input.domainTld} / 年）`,
       unit: domainActual,
@@ -218,13 +222,13 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
     if (input.domainProxy) {
       lines.push({
         label: "ドメイン取得代行",
-        unit: pricing.launch.domainProxy,
+        unit: config.launch.domainProxy,
         qty: 1,
-        subtotal: pricing.launch.domainProxy,
+        subtotal: config.launch.domainProxy,
         category: "launch",
       });
-      subtotalLaunch += pricing.launch.domainProxy;
-      domainActual = pricing.launch.domainActual[input.domainTld];
+      subtotalLaunch += config.launch.domainProxy;
+      domainActual = config.launch.domainActual[input.domainTld];
       lines.push({
         label: `ドメイン実費（.${input.domainTld} / 年）`,
         unit: domainActual,
@@ -236,18 +240,18 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
     if (input.vercelSetup) {
       lines.push({
         label: "Vercel公開・DNS・SSL設定",
-        unit: pricing.launch.vercelSetup,
+        unit: config.launch.vercelSetup,
         qty: 1,
-        subtotal: pricing.launch.vercelSetup,
+        subtotal: config.launch.vercelSetup,
         category: "launch",
       });
-      subtotalLaunch += pricing.launch.vercelSetup;
+      subtotalLaunch += config.launch.vercelSetup;
     }
   }
 
   let subtotalMaintenance = 0;
   if (input.maintenancePlan !== "none") {
-    const monthly = pricing.maintenance[input.maintenancePlan];
+    const monthly = config.maintenance[input.maintenancePlan];
     subtotalMaintenance = monthly * input.maintenanceMonths;
     lines.push({
       label: `保守（${input.maintenancePlan === "light" ? "ライト" : input.maintenancePlan === "standard" ? "標準" : "フル"}）`,
@@ -297,51 +301,62 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
   };
 }
 
-export const defaultEstimateInput: EstimateInput = {
-  clientType: "normal",
-  seniorProductionPercentOff: pricing.seniorDiscount.productionPercentOff,
-  seniorLaunchMaintenancePercentOff:
-    pricing.seniorDiscount.launchMaintenancePercentOff,
-  siteType: "corporate",
-  pageCount: 8,
-  businessPageCount: 3,
-  designQuality: "original",
-  photoMode: "stock",
-  heroImageCount: 2,
-  contentImageCount: 6,
-  toneAdjust: false,
-  options: {
-    contactForm: false,
-    faq: false,
-    news: false,
-    english: false,
-    seo: false,
-    cms: false,
-    multiStore: false,
-  },
-  domainProxy: false,
-  vercelSetup: false,
-  launchBundle: false,
-  domainTld: "jp",
-  maintenancePlan: "standard",
-  maintenanceMonths: 12,
-};
+export function createDefaultEstimateInput(
+  config: PricingConfig = pricing,
+): EstimateInput {
+  return {
+    clientType: "normal",
+    seniorProductionPercentOff: config.seniorDiscount.productionPercentOff,
+    seniorLaunchMaintenancePercentOff:
+      config.seniorDiscount.launchMaintenancePercentOff,
+    siteType: "corporate",
+    pageCount: 8,
+    businessPageCount: 3,
+    designQuality: "original",
+    photoMode: "stock",
+    heroImageCount: 2,
+    contentImageCount: 6,
+    toneAdjust: false,
+    options: {
+      contactForm: false,
+      faq: false,
+      news: false,
+      english: false,
+      seo: false,
+      cms: false,
+      multiStore: false,
+    },
+    domainProxy: false,
+    vercelSetup: false,
+    launchBundle: false,
+    domainTld: "jp",
+    maintenancePlan: "standard",
+    maintenanceMonths: 12,
+  };
+}
 
-export const luxeHoldingsPreset: EstimateInput = {
-  ...defaultEstimateInput,
-  pageCount: 10,
-  businessPageCount: 6,
-  designQuality: "original",
-  options: {
-    contactForm: true,
-    faq: false,
-    news: false,
-    english: false,
-    seo: true,
-    cms: true,
-    multiStore: false,
-  },
-};
+export function createLuxeHoldingsPreset(
+  config: PricingConfig = pricing,
+): EstimateInput {
+  return {
+    ...createDefaultEstimateInput(config),
+    pageCount: 10,
+    businessPageCount: 6,
+    designQuality: "original",
+    options: {
+      contactForm: true,
+      faq: false,
+      news: false,
+      english: false,
+      seo: true,
+      cms: true,
+      multiStore: false,
+    },
+  };
+}
+
+export const defaultEstimateInput = createDefaultEstimateInput();
+export const luxeHoldingsPreset = createLuxeHoldingsPreset();
 
 export function formatYen(amount: number): string {
   return new Intl.NumberFormat("ja-JP", {

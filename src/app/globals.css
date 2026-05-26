@@ -6,6 +6,10 @@
   --font-en: "Helvetica Neue", Arial, sans-serif;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-sans);
   color: #111;
@@ -14,4 +18,24 @@ body {
 
 .font-en {
   font-family: var(--font-en);
+}
+
+.range-input {
+  height: 2rem;
+  accent-color: #111;
+  touch-action: pan-y;
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .estimate-page-shell {
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom));
+  }
 }
