@@ -1,5 +1,6 @@
 "use client";
 
+import { EstimateBreakdown as EstimateBreakdownPanel } from "@/components/estimate/EstimateBreakdown";
 import { InfoPanel } from "@/components/estimate/estimate-ui";
 import {
   estimateCopy,
@@ -11,7 +12,8 @@ import {
   type EstimateBreakdown,
   type EstimateInput,
 } from "@/lib/calculateEstimate";
-import { useState } from "react";
+import { buildBreakdownView } from "@/lib/breakdownView";
+import { useMemo, useState } from "react";
 
 type EstimateSummaryProps = {
   input: EstimateInput;
@@ -43,66 +45,6 @@ function SummaryRow({
   );
 }
 
-function BreakdownCards({
-  lines,
-}: {
-  lines: EstimateBreakdown["lines"];
-}) {
-  return (
-    <div className="space-y-2 lg:hidden">
-      {lines.map((line, i) => (
-        <div
-          key={`${line.label}-${i}`}
-          className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-3"
-        >
-          <p className="text-sm font-medium leading-snug">{line.label}</p>
-          <div className="mt-2 flex items-center justify-between text-xs text-neutral-500">
-            <span>
-              {formatYen(line.unit)} × {line.qty}
-            </span>
-            <span className="font-en text-sm text-neutral-900 tabular-nums">
-              {formatYen(line.subtotal)}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function BreakdownTable({
-  lines,
-  headers,
-}: {
-  lines: EstimateBreakdown["lines"];
-  headers: typeof estimateCopy.summary.breakdownHeaders;
-}) {
-  return (
-    <div className="hidden overflow-x-auto lg:block">
-      <table className="w-full min-w-[420px] text-left text-xs">
-        <thead>
-          <tr className="border-b border-neutral-200 text-neutral-500">
-            <th className="pb-2 pr-2 font-medium">{headers.item}</th>
-            <th className="pb-2 pr-2 font-medium">{headers.unit}</th>
-            <th className="pb-2 pr-2 font-medium">{headers.qty}</th>
-            <th className="pb-2 font-medium">{headers.subtotal}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lines.map((line, i) => (
-            <tr key={`${line.label}-${i}`} className="border-b border-neutral-100">
-              <td className="py-2 pr-2">{line.label}</td>
-              <td className="py-2 pr-2 tabular-nums">{formatYen(line.unit)}</td>
-              <td className="py-2 pr-2 tabular-nums">{line.qty}</td>
-              <td className="py-2 tabular-nums">{formatYen(line.subtotal)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 export function EstimateSummary({
   input,
   breakdown,
@@ -111,8 +53,12 @@ export function EstimateSummary({
   copyStatus,
   variant = "full",
 }: EstimateSummaryProps) {
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(true);
   const { summary } = estimateCopy;
+  const breakdownView = useMemo(
+    () => buildBreakdownView(input, breakdown),
+    [input, breakdown],
+  );
   const isSenior = input.clientType === "senior";
   const displayTotal = isSenior
     ? breakdown.totalWithSeniorDiscount
@@ -271,11 +217,7 @@ export function EstimateSummary({
 
         {showBreakdown && (
           <div className="mt-4">
-            <BreakdownCards lines={breakdown.lines} />
-            <BreakdownTable
-              lines={breakdown.lines}
-              headers={summary.breakdownHeaders}
-            />
+            <EstimateBreakdownPanel view={breakdownView} />
           </div>
         )}
       </div>
