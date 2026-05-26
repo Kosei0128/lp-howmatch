@@ -83,8 +83,8 @@ export const pricing: PricingConfig = {
     toneAdjust: 5000,
   },
   options: {
-    contactForm: 20000,
-    faq: 15000,
+    contactForm: 15000,
+    faq: 10000,
     news: 30000,
     english: 80000,
     seo: 15000,
