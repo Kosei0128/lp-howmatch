@@ -39,3 +39,19 @@ details > summary::-webkit-details-marker {
     padding-bottom: calc(9rem + env(safe-area-inset-bottom));
   }
 }
+
+@media (min-width: 1024px) {
+  .estimate-summary-panel {
+    scrollbar-width: thin;
+    scrollbar-color: #d4d4d4 transparent;
+  }
+
+  .estimate-summary-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .estimate-summary-panel::-webkit-scrollbar-thumb {
+    background: #d4d4d4;
+    border-radius: 9999px;
+  }
+}

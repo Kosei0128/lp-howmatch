@@ -170,7 +170,7 @@ export function EstimateSummary({
   }
 
   return (
-    <div className="space-y-4 lg:sticky lg:top-6 lg:space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-en mb-4 text-lg font-medium">見積サマリー</h2>
 

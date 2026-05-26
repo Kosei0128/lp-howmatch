@@ -70,7 +70,7 @@ export function EstimateCalculator() {
         <PricingSettings config={pricingConfig} onChange={setPricingConfig} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
         <EstimateInputs
           input={input}
           pricingConfig={pricingConfig}
@@ -79,13 +79,15 @@ export function EstimateCalculator() {
             setInput(createLuxeHoldingsPreset(pricingConfig))
           }
         />
-        <EstimateSummary
-          input={input}
-          breakdown={breakdown}
-          onCopyMemo={handleCopyMemo}
-          onReset={handleReset}
-          copyStatus={copyStatus}
-        />
+        <aside className="estimate-summary-panel lg:sticky lg:top-6 lg:max-h-[calc(100dvh-2rem)] lg:self-start lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1">
+          <EstimateSummary
+            input={input}
+            breakdown={breakdown}
+            onCopyMemo={handleCopyMemo}
+            onReset={handleReset}
+            copyStatus={copyStatus}
+          />
+        </aside>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-neutral-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] backdrop-blur-sm pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
