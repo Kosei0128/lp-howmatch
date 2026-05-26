@@ -71,16 +71,18 @@ export function EstimateCalculator() {
         <PricingSettings config={pricingConfig} onChange={setPricingConfig} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
-        <EstimateInputs
-          input={input}
-          pricingConfig={pricingConfig}
-          onChange={handleChange}
-          onApplyPreset={() =>
-            setInput(createLuxeHoldingsPreset(pricingConfig))
-          }
-        />
-        <aside className="estimate-summary-panel lg:sticky lg:top-6 lg:max-h-[calc(100dvh-2rem)] lg:self-start lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
+        <div className="min-w-0">
+          <EstimateInputs
+            input={input}
+            pricingConfig={pricingConfig}
+            onChange={handleChange}
+            onApplyPreset={() =>
+              setInput(createLuxeHoldingsPreset(pricingConfig))
+            }
+          />
+        </div>
+        <aside className="estimate-summary-panel min-w-0 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-2rem)] lg:self-start lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1">
           <EstimateSummary
             input={input}
             breakdown={breakdown}

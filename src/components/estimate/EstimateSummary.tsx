@@ -37,8 +37,8 @@ function SummaryRow({
     <div
       className={`flex items-start justify-between gap-3 py-2.5 ${muted ? "text-neutral-500" : ""}`}
     >
-      <span className="text-sm leading-snug">{label}</span>
-      <span className="font-en shrink-0 text-sm tabular-nums">
+      <span className="min-w-0 flex-1 text-sm leading-snug">{label}</span>
+      <span className="shrink-0 whitespace-nowrap font-en text-sm tabular-nums">
         {formatYen(amount)}
       </span>
     </div>
@@ -102,12 +102,12 @@ export function EstimateSummary({
               <span className="font-en text-xs text-neutral-400 line-through tabular-nums">
                 {formatYen(breakdown.total)}
               </span>
-              <span className="font-en truncate text-xl font-semibold tabular-nums">
+              <span className="font-en shrink-0 whitespace-nowrap text-xl font-semibold tabular-nums">
                 {formatYen(displayTotal)}
               </span>
             </div>
           ) : (
-            <p className="font-en truncate text-xl font-semibold tabular-nums">
+            <p className="font-en shrink-0 whitespace-nowrap text-xl font-semibold tabular-nums">
               {formatYen(displayTotal)}
             </p>
           )}
@@ -126,8 +126,8 @@ export function EstimateSummary({
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
+    <div className="min-w-0 space-y-4 lg:space-y-6">
+      <div className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-en mb-1 text-lg font-medium">{summary.title}</h2>
         <p className="mb-4 text-xs leading-relaxed text-neutral-500">
           {summary.intro}
@@ -161,7 +161,7 @@ export function EstimateSummary({
                 <span className="text-base font-medium leading-snug">
                   {summary.totalSenior}
                 </span>
-                <span className="font-en text-2xl font-semibold tabular-nums sm:text-xl">
+                <span className="font-en shrink-0 whitespace-nowrap text-2xl font-semibold tabular-nums sm:text-xl">
                   {formatYen(displayTotal)}
                 </span>
               </div>
@@ -175,7 +175,7 @@ export function EstimateSummary({
           ) : (
             <div className="flex items-start justify-between gap-3">
               <span className="text-base font-medium">{summary.totalNormal}</span>
-              <span className="font-en text-2xl font-semibold tabular-nums sm:text-xl">
+              <span className="font-en shrink-0 whitespace-nowrap text-2xl font-semibold tabular-nums sm:text-xl">
                 {formatYen(displayTotal)}
               </span>
             </div>
@@ -204,19 +204,19 @@ export function EstimateSummary({
         <InfoPanel title={summary.howToReadTitle} items={summary.howToReadItems} />
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
+      <div className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
         <button
           type="button"
           onClick={() => setShowBreakdown((v) => !v)}
-          className="flex min-h-11 w-full items-center justify-between text-sm font-medium"
+          className="flex min-h-11 w-full items-center justify-between gap-3 text-sm font-medium"
           aria-expanded={showBreakdown}
         >
-          {summary.breakdownToggle}
-          <span className="text-neutral-400">{showBreakdown ? "−" : "+"}</span>
+          <span className="min-w-0 text-left">{summary.breakdownToggle}</span>
+          <span className="shrink-0 text-neutral-400">{showBreakdown ? "−" : "+"}</span>
         </button>
 
         {showBreakdown && (
-          <div className="mt-4">
+          <div className="mt-4 min-w-0">
             <EstimateBreakdownPanel view={breakdownView} />
           </div>
         )}
