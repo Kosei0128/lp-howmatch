@@ -5,8 +5,8 @@
  * - base: サイト種別ごとのベース制作費（トップ＋共通ヘッダ/footer）
  * - perPage: 固定ページ・事業詳細ページの単価
  * - designMultiplier: デザイン品質による制作費倍率
- * - seniorDiscount: 先輩・知人割（制作費のみに適用）
- * - seniorDiscountLaunchMaintenance: 公開・保守への割引率（1.0 = 割引なし, 0.9 = 10% off）
+ * - seniorDiscount.productionPercentOff: 制作費の割引率（45 = 45% OFF）
+ * - seniorDiscount.launchMaintenancePercentOff: 公開・保守の割引率（10 = 10% OFF）
  * - photos / options / launch / maintenance: 各オプション単価
  */
 
@@ -33,9 +33,14 @@ export type PricingConfig = {
   base: { corporate: number; lp: number; small: number };
   perPage: { fixed: number; business: number };
   designMultiplier: { template: number; original: number; premium: number };
-  seniorDiscount: number;
-  /** 公開・保守への先輩割（1.0 = なし, 0.9 = 10% off） */
-  seniorDiscountLaunchMaintenance: number;
+  seniorDiscount: {
+    /** 制作費の割引率（45 = 45% OFF → 通常の55%で請求） */
+    productionPercentOff: number;
+    /** 公開・保守の割引率（10 = 10% OFF） */
+    launchMaintenancePercentOff: number;
+    productionPercentOffRange: { min: number; max: number };
+    launchMaintenancePercentOffRange: { min: number; max: number };
+  };
   photos: {
     heroPerImage: number;
     contentPerImage: number;
@@ -66,8 +71,12 @@ export const pricing: PricingConfig = {
     original: 1.0,
     premium: 1.3,
   },
-  seniorDiscount: 0.55,
-  seniorDiscountLaunchMaintenance: 0.9,
+  seniorDiscount: {
+    productionPercentOff: 45,
+    launchMaintenancePercentOff: 10,
+    productionPercentOffRange: { min: 0, max: 70 },
+    launchMaintenancePercentOffRange: { min: 0, max: 30 },
+  },
   photos: {
     heroPerImage: 5000,
     contentPerImage: 3000,
@@ -124,3 +133,9 @@ export const maintenanceLabels: Record<Exclude<MaintenancePlan, "none">, string>
     standard: "標準",
     full: "フル",
   };
+
+/** 割引率（% OFF）→ 請求倍率（45% OFF → 0.55） */
+export function percentOffToMultiplier(percentOff: number): number {
+  const clamped = Math.max(0, Math.min(100, percentOff));
+  return 1 - clamped / 100;
+}

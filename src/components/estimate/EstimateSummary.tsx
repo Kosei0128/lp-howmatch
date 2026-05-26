@@ -1,6 +1,6 @@
 "use client";
 
-import { pricing } from "@/config/pricing";
+import { percentOffToMultiplier } from "@/config/pricing";
 import {
   formatYen,
   type EstimateBreakdown,
@@ -49,19 +49,22 @@ export function EstimateSummary({
     : breakdown.total;
 
   const productionDisplay = isSenior
-    ? Math.round(breakdown.subtotalProduction * pricing.seniorDiscount)
+    ? Math.round(
+        breakdown.subtotalProduction *
+          percentOffToMultiplier(input.seniorProductionPercentOff),
+      )
     : breakdown.subtotalProduction;
 
+  const launchMaintenanceMultiplier = isSenior
+    ? percentOffToMultiplier(input.seniorLaunchMaintenancePercentOff)
+    : 1;
+
   const launchDisplay = isSenior
-    ? Math.round(
-        breakdown.subtotalLaunch * pricing.seniorDiscountLaunchMaintenance,
-      )
+    ? Math.round(breakdown.subtotalLaunch * launchMaintenanceMultiplier)
     : breakdown.subtotalLaunch;
 
   const maintenanceDisplay = isSenior
-    ? Math.round(
-        breakdown.subtotalMaintenance * pricing.seniorDiscountLaunchMaintenance,
-      )
+    ? Math.round(breakdown.subtotalMaintenance * launchMaintenanceMultiplier)
     : breakdown.subtotalMaintenance;
 
   return (
@@ -105,8 +108,8 @@ export function EstimateSummary({
                 </span>
               </div>
               <p className="text-xs text-neutral-500">
-                制作費 ×{pricing.seniorDiscount} / 公開・保守 ×
-                {pricing.seniorDiscountLaunchMaintenance}
+                制作費 {input.seniorProductionPercentOff}% OFF / 公開・保守{" "}
+                {input.seniorLaunchMaintenancePercentOff}% OFF
               </p>
             </div>
           ) : (

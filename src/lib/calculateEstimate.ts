@@ -1,4 +1,5 @@
 import {
+  percentOffToMultiplier,
   pricing,
   type DesignQuality,
   type DomainTld,
@@ -13,6 +14,10 @@ export type ClientType = "normal" | "senior";
 
 export type EstimateInput = {
   clientType: ClientType;
+  /** 制作費の割引率（% OFF）。先輩割選択時のみ有効 */
+  seniorProductionPercentOff: number;
+  /** 公開・保守の割引率（% OFF）。先輩割選択時のみ有効 */
+  seniorLaunchMaintenancePercentOff: number;
   siteType: SiteType;
   pageCount: number;
   businessPageCount: number;
@@ -55,19 +60,26 @@ function getBasePrice(siteType: SiteType): number {
   return pricing.base[siteType];
 }
 
-function applySeniorToProduction(amount: number, clientType: ClientType): number {
-  if (clientType === "senior") {
-    return Math.round(amount * pricing.seniorDiscount);
+function applySeniorToProduction(amount: number, input: EstimateInput): number {
+  if (input.clientType === "senior") {
+    return Math.round(
+      amount * percentOffToMultiplier(input.seniorProductionPercentOff),
+    );
   }
   return amount;
 }
 
 function applySeniorToLaunchMaintenance(
   amount: number,
-  clientType: ClientType,
+  input: EstimateInput,
 ): number {
-  if (clientType === "senior" && pricing.seniorDiscountLaunchMaintenance < 1) {
-    return Math.round(amount * pricing.seniorDiscountLaunchMaintenance);
+  if (input.clientType === "senior") {
+    const multiplier = percentOffToMultiplier(
+      input.seniorLaunchMaintenancePercentOff,
+    );
+    if (multiplier < 1) {
+      return Math.round(amount * multiplier);
+    }
   }
   return amount;
 }
@@ -246,11 +258,11 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
     });
   }
 
-  const productionDiscounted = applySeniorToProduction(subtotalProduction, input.clientType);
-  const launchDiscounted = applySeniorToLaunchMaintenance(subtotalLaunch, input.clientType);
+  const productionDiscounted = applySeniorToProduction(subtotalProduction, input);
+  const launchDiscounted = applySeniorToLaunchMaintenance(subtotalLaunch, input);
   const maintenanceDiscounted = applySeniorToLaunchMaintenance(
     subtotalMaintenance,
-    input.clientType,
+    input,
   );
 
   const total =
@@ -287,6 +299,9 @@ export function calculateEstimate(input: EstimateInput): EstimateBreakdown {
 
 export const defaultEstimateInput: EstimateInput = {
   clientType: "normal",
+  seniorProductionPercentOff: pricing.seniorDiscount.productionPercentOff,
+  seniorLaunchMaintenancePercentOff:
+    pricing.seniorDiscount.launchMaintenancePercentOff,
   siteType: "corporate",
   pageCount: 8,
   businessPageCount: 3,
@@ -347,6 +362,15 @@ export function buildEstimateMemo(
     "【Web制作 見積メモ】",
     "",
     `クライアント種別: ${isSenior ? "先輩・知人割" : "通常"}`,
+  ];
+
+  if (isSenior) {
+    lines.push(
+      `先輩割: 制作費 ${input.seniorProductionPercentOff}% OFF / 公開・保守 ${input.seniorLaunchMaintenancePercentOff}% OFF`,
+    );
+  }
+
+  lines.push(
     `サイト種別: ${input.siteType}`,
     `ページ数: ${input.pageCount} / 事業詳細: ${input.businessPageCount}`,
     `デザイン: ${input.designQuality}`,
@@ -356,7 +380,7 @@ export function buildEstimateMemo(
     `写真・素材代行: ${formatYen(breakdown.subtotalPhotos)}`,
     `機能オプション: ${formatYen(breakdown.subtotalOptions)}`,
     `公開費用: ${formatYen(breakdown.subtotalLaunch)}`,
-  ];
+  );
 
   if (breakdown.domainActual > 0) {
     lines.push(`ドメイン実費（年）: ${formatYen(breakdown.domainActual)}`);

@@ -140,6 +140,82 @@ export function EstimateInputs({
           />
         </div>
 
+        {input.clientType === "senior" && (
+          <div className="space-y-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+            <p className="text-xs text-neutral-600">
+              割引率はその場で調整できます。デフォルト値は{" "}
+              <code className="rounded bg-neutral-200 px-1">pricing.ts</code>{" "}
+              から読み込まれます。
+            </p>
+            <div className="space-y-2">
+              <FieldLabel htmlFor="seniorProductionPercentOff">
+                制作費割引 {input.seniorProductionPercentOff}% OFF
+              </FieldLabel>
+              <input
+                id="seniorProductionPercentOff"
+                type="range"
+                min={pricing.seniorDiscount.productionPercentOffRange.min}
+                max={pricing.seniorDiscount.productionPercentOffRange.max}
+                step={1}
+                value={input.seniorProductionPercentOff}
+                onChange={(e) =>
+                  onChange({
+                    seniorProductionPercentOff: Number(e.target.value),
+                  })
+                }
+                className="w-full accent-neutral-900"
+              />
+              <div className="flex justify-between text-xs text-neutral-500">
+                <span>
+                  {pricing.seniorDiscount.productionPercentOffRange.min}%
+                </span>
+                <span>
+                  {pricing.seniorDiscount.productionPercentOffRange.max}%
+                </span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <FieldLabel htmlFor="seniorLaunchMaintenancePercentOff">
+                公開・保守割引 {input.seniorLaunchMaintenancePercentOff}% OFF
+              </FieldLabel>
+              <input
+                id="seniorLaunchMaintenancePercentOff"
+                type="range"
+                min={
+                  pricing.seniorDiscount.launchMaintenancePercentOffRange.min
+                }
+                max={
+                  pricing.seniorDiscount.launchMaintenancePercentOffRange.max
+                }
+                step={1}
+                value={input.seniorLaunchMaintenancePercentOff}
+                onChange={(e) =>
+                  onChange({
+                    seniorLaunchMaintenancePercentOff: Number(e.target.value),
+                  })
+                }
+                className="w-full accent-neutral-900"
+              />
+              <div className="flex justify-between text-xs text-neutral-500">
+                <span>
+                  {
+                    pricing.seniorDiscount.launchMaintenancePercentOffRange
+                      .min
+                  }
+                  %
+                </span>
+                <span>
+                  {
+                    pricing.seniorDiscount.launchMaintenancePercentOffRange
+                      .max
+                  }
+                  %
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2">
           <FieldLabel htmlFor="siteType">サイト種別</FieldLabel>
           <select
