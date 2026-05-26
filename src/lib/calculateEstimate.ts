@@ -337,6 +337,8 @@ const emptyOptions = (): Record<OptionKey, boolean> => ({
   seo: false,
   cms: false,
   multiStore: false,
+  copySupport: false,
+  copyPremium: false,
 });
 
 /** 初期表示・リセット用（ページ未選択 = 0円） */
@@ -401,6 +403,8 @@ export function createLuxeHoldingsPreset(
       seo: true,
       cms: true,
       multiStore: false,
+      copySupport: false,
+      copyPremium: false,
     },
   };
 }

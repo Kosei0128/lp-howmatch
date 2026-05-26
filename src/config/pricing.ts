@@ -1,13 +1,8 @@
 /**
  * 料金設定 — 数字を変更する場合はこのファイルのみ編集してください。
  *
- * カスタマイズ例:
- * - base: サイト種別ごとのベース制作費（トップ＋共通ヘッダ/footer）
- * - perPage: 固定ページ・事業詳細ページの単価
- * - designMultiplier: デザイン品質による制作費倍率
- * - seniorDiscount.productionPercentOff: 制作費・オプションの割引率（45 = 45% OFF）
- * - seniorDiscount.launchMaintenancePercentOff: 公開・保守の割引率（10 = 10% OFF）
- * - photos / options / launch / maintenance: 各オプション単価
+ * Phase 1（2026-05）: 市場調査 Pattern A 寄り — オプション・公開・写真を圧縮。
+ * ベース料金は実績作り期間のため現行維持。知人割 45% / 10% 維持。
  */
 
 export type SiteType = "lp" | "small" | "corporate";
@@ -27,7 +22,9 @@ export type OptionKey =
   | "english"
   | "seo"
   | "cms"
-  | "multiStore";
+  | "multiStore"
+  | "copySupport"
+  | "copyPremium";
 
 export type PricingConfig = {
   base: { corporate: number; lp: number; small: number };
@@ -64,12 +61,12 @@ export const pricing: PricingConfig = {
   },
   perPage: {
     fixed: 10000,
-    business: 12000,
+    business: 13000,
   },
   designMultiplier: {
     template: 0.6,
     original: 1.0,
-    premium: 1.3,
+    premium: 1.35,
   },
   seniorDiscount: {
     productionPercentOff: 45,
@@ -78,29 +75,31 @@ export const pricing: PricingConfig = {
     launchMaintenancePercentOffRange: { min: 0, max: 30 },
   },
   photos: {
-    heroPerImage: 5000,
-    contentPerImage: 3000,
-    toneAdjust: 5000,
+    heroPerImage: 3000,
+    contentPerImage: 2000,
+    toneAdjust: 3000,
   },
   options: {
-    contactForm: 15000,
-    faq: 10000,
-    news: 30000,
-    english: 80000,
-    seo: 15000,
-    cms: 50000,
-    multiStore: 50000,
+    contactForm: 12000,
+    faq: 5000,
+    news: 25000,
+    english: 50000,
+    seo: 10000,
+    cms: 35000,
+    multiStore: 35000,
+    copySupport: 15000,
+    copyPremium: 30000,
   },
   launch: {
-    domainProxy: 8000,
-    vercelSetup: 15000,
-    launchBundle: 20000,
+    domainProxy: 4000,
+    vercelSetup: 12000,
+    launchBundle: 15000,
     domainActual: { "co.jp": 5000, com: 2000 },
   },
   maintenance: {
     none: 0,
     light: 3000,
-    standard: 8000,
+    standard: 7000,
     full: 12000,
   },
 };

@@ -3,7 +3,7 @@ import { estimateCopy } from "@/config/estimateGuide";
 import Link from "next/link";
 
 export default function EstimatePage() {
-  const { page } = estimateCopy;
+  const { page, content } = estimateCopy;
 
   return (
     <main className="min-h-screen bg-neutral-50">
@@ -25,9 +25,22 @@ export default function EstimatePage() {
 
         <EstimateCalculator />
 
-        <footer className="mt-12 rounded-2xl border border-neutral-200 bg-white p-4 text-sm leading-relaxed text-neutral-600 sm:mt-16 sm:p-6">
-          <p>{page.disclaimer}</p>
-          <p className="mt-2">{page.specialPriceNote}</p>
+        <footer className="mt-12 space-y-6 sm:mt-16">
+          <section className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
+            <h2 className="text-base font-semibold text-neutral-900">
+              {content.clientNoticeTitle}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-600">
+              {content.clientNotice}
+            </p>
+            <p className="mt-4 text-xs leading-relaxed text-neutral-500">
+              詳しい説明・制作の流れ・注意点は、左側の「{estimateCopy.sections.content.title}」セクションにも記載しています。
+            </p>
+          </section>
+          <div className="rounded-2xl border border-neutral-200 bg-white p-4 text-sm leading-relaxed text-neutral-600 sm:p-6">
+            <p>{page.disclaimer}</p>
+            <p className="mt-2">{page.specialPriceNote}</p>
+          </div>
         </footer>
       </div>
     </main>

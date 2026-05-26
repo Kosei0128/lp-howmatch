@@ -1,5 +1,6 @@
 "use client";
 
+import { ContentWorkflowSection } from "@/components/estimate/ContentWorkflowSection";
 import {
   CheckboxRow,
   FieldHint,
@@ -47,6 +48,7 @@ import {
   type PricingConfig,
   type SiteType,
 } from "@/config/pricing";
+import type { CoconalaPackId } from "@/lib/coconalaPacks";
 import type { ClientType, EstimateInput } from "@/lib/calculateEstimate";
 
 type EstimateInputsProps = {
@@ -54,6 +56,7 @@ type EstimateInputsProps = {
   pricingConfig: PricingConfig;
   onChange: (patch: Partial<EstimateInput>) => void;
   onApplyPreset: () => void;
+  onApplyCoconalaPack: (packId: CoconalaPackId) => void;
 };
 
 export function EstimateInputs({
@@ -61,8 +64,11 @@ export function EstimateInputs({
   pricingConfig,
   onChange,
   onApplyPreset,
+  onApplyCoconalaPack,
 }: EstimateInputsProps) {
-  const optionKeys = Object.keys(optionLabels) as OptionKey[];
+  const optionKeys = (Object.keys(optionLabels) as OptionKey[]).filter(
+    (key) => key !== "copySupport" && key !== "copyPremium",
+  );
   const maintenancePlans: MaintenancePlan[] = [
     "none",
     "light",
@@ -71,7 +77,7 @@ export function EstimateInputs({
   ];
   const selectedSiteGuide = siteTypeGuide[input.siteType];
 
-  const { preset, sections, labels, hints } = estimateCopy;
+  const { preset, coconalaPacks, sections, labels, hints } = estimateCopy;
 
   const toggleOption = (key: OptionKey) => {
     onChange({
@@ -94,6 +100,55 @@ export function EstimateInputs({
           >
             {preset.applyButton}
           </button>
+        </div>
+      </details>
+
+      <details className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
+        <summary className="cursor-pointer text-sm font-medium">
+          {coconalaPacks.sectionTitle}
+        </summary>
+        <div className="mt-3 space-y-4">
+          <p className="text-sm leading-relaxed text-neutral-600">
+            {coconalaPacks.sectionDescription}
+          </p>
+          {(
+            Object.entries(coconalaPacks.items) as [
+              CoconalaPackId,
+              (typeof coconalaPacks.items)[CoconalaPackId],
+            ][]
+          ).map(([packId, pack]) => (
+            <div
+              key={packId}
+              className="rounded-xl border border-neutral-200 bg-neutral-50 p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold text-neutral-900">
+                  {pack.title}
+                </h3>
+                <span className="shrink-0 rounded-full bg-neutral-900 px-2.5 py-0.5 text-xs font-medium text-white">
+                  出品目安 {pack.targetPrice}
+                </span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                {pack.summary}
+              </p>
+              <ul className="mt-2 space-y-1 text-xs text-neutral-500">
+                {pack.includes.map((item) => (
+                  <li key={item}>・{item}</li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                onClick={() => onApplyCoconalaPack(packId)}
+                className="mt-3 min-h-11 w-full rounded-xl border border-neutral-900 px-4 py-2.5 text-sm transition active:bg-neutral-900 active:text-white sm:w-auto"
+              >
+                {coconalaPacks.applyButton}
+              </button>
+            </div>
+          ))}
+          <p className="text-xs leading-relaxed text-neutral-500">
+            {coconalaPacks.note}
+          </p>
         </div>
       </details>
 
@@ -217,11 +272,7 @@ export function EstimateInputs({
               min={0}
               max={12}
               value={input.businessPageCount}
-              onChange={(businessPageCount) =>
-                onChange({
-                  businessPageCount: Math.min(12, Math.max(0, businessPageCount)),
-                })
-              }
+              onChange={(businessPageCount) => onChange({ businessPageCount })}
               className="w-28"
             />
           </div>
@@ -333,6 +384,12 @@ export function EstimateInputs({
             </div>
           )}
         </Section>
+
+        <ContentWorkflowSection
+          input={input}
+          pricingConfig={pricingConfig}
+          onToggleCopyOption={(key) => toggleOption(key)}
+        />
 
         <Section title={sections.options.title} description={sections.options.description}>
           <div className="grid gap-2">

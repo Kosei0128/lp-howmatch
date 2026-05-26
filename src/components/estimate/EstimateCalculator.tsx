@@ -11,6 +11,10 @@ import {
   type EstimateInput,
 } from "@/lib/calculateEstimate";
 import {
+  createCoconalaPackPreset,
+  type CoconalaPackId,
+} from "@/lib/coconalaPacks";
+import {
   clonePricingConfig,
   loadPricingConfig,
 } from "@/lib/pricingStorage";
@@ -77,9 +81,14 @@ export function EstimateCalculator() {
             input={input}
             pricingConfig={pricingConfig}
             onChange={handleChange}
-            onApplyPreset={() =>
-              setInput(createLuxeHoldingsPreset(pricingConfig))
-            }
+            onApplyPreset={() => {
+              setInput(createLuxeHoldingsPreset(pricingConfig));
+              setCopyStatus("idle");
+            }}
+            onApplyCoconalaPack={(packId: CoconalaPackId) => {
+              setInput(createCoconalaPackPreset(packId, pricingConfig));
+              setCopyStatus("idle");
+            }}
           />
         </div>
         <aside className="estimate-summary-panel min-w-0 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-2rem)] lg:self-start lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1">

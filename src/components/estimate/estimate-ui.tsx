@@ -1,6 +1,37 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+
+function clampValue(value: number, min?: number, max?: number): number {
+  let next = value;
+  if (min !== undefined) next = Math.max(min, next);
+  if (max !== undefined) next = Math.min(max, next);
+  return next;
+}
+
+function usesIntegerStep(step: number): boolean {
+  return step >= 1 && Number.isInteger(step);
+}
+
+function formatNumberForDisplay(value: number, integer: boolean): string {
+  return integer ? String(Math.trunc(value)) : String(value);
+}
+
+function sanitizeIntegerDraft(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (digits === "") return "";
+  return String(parseInt(digits, 10));
+}
+
+function sanitizeDecimalDraft(raw: string): string {
+  const cleaned = raw.replace(/[^\d.]/g, "");
+  const [head, ...rest] = cleaned.split(".");
+  if (rest.length === 0) {
+    return head;
+  }
+  return `${head}.${rest.join("")}`;
+}
 
 export function Section({
   title,
@@ -85,16 +116,57 @@ export function NumberInput({
   step?: number;
   className?: string;
 }) {
+  const integerMode = usesIntegerStep(step);
+  const [draft, setDraft] = useState(() =>
+    formatNumberForDisplay(value, integerMode),
+  );
+
+  useEffect(() => {
+    setDraft(formatNumberForDisplay(value, integerMode));
+  }, [value, integerMode]);
+
+  const commitDraft = (raw: string) => {
+    if (raw === "" || raw === ".") {
+      const fallback = clampValue(min ?? 0, min, max);
+      setDraft(formatNumberForDisplay(fallback, integerMode));
+      onChange(fallback);
+      return;
+    }
+
+    const parsed = integerMode ? parseInt(raw, 10) : parseFloat(raw);
+    if (Number.isNaN(parsed)) {
+      setDraft(formatNumberForDisplay(value, integerMode));
+      return;
+    }
+
+    const next = clampValue(parsed, min, max);
+    setDraft(formatNumberForDisplay(next, integerMode));
+    onChange(next);
+  };
+
   return (
     <input
       id={id}
-      type="number"
-      inputMode="numeric"
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
+      type="text"
+      inputMode={integerMode ? "numeric" : "decimal"}
+      autoComplete="off"
+      value={draft}
+      onChange={(e) => {
+        const raw = integerMode
+          ? sanitizeIntegerDraft(e.target.value)
+          : sanitizeDecimalDraft(e.target.value);
+
+        setDraft(raw);
+
+        if (raw === "" || raw === ".") return;
+
+        const parsed = integerMode ? parseInt(raw, 10) : parseFloat(raw);
+        if (Number.isNaN(parsed)) return;
+
+        onChange(clampValue(parsed, min, max));
+      }}
+      onBlur={() => commitDraft(draft)}
+      onFocus={(e) => e.target.select()}
       className={`min-h-11 rounded-xl border border-neutral-300 px-3 py-2.5 text-base tabular-nums sm:text-sm ${className}`}
     />
   );

@@ -36,8 +36,119 @@ export const estimateCopy = {
   },
   preset: {
     title: "参考事例：LUXE HOLDINGS 相当",
-    body: "ページ10・事業6・管理画面・SEO・オリジナルデザイン。通常見積の目安は約 ¥350,000。初回制作の特別価格（¥40,000）は参考事例であり、通常見積には含みません。",
+    body: "ページ10・事業6・管理画面・SEO・オリジナルデザイン。通常見積の目安は約 ¥290,000。初回制作の特別価格（¥40,000）は参考事例であり、通常見積には含みません。",
     applyButton: "この構成を読み込む",
+  },
+  content: {
+    includedTitle: "制作費に含まれること（追加料金なし）",
+    includedItems: [
+      "お客様からいただいた文章を、サイトの各ページに入れ込む作業",
+      "誤字脱字の修正、言い回しを少し自然にする調整",
+      "見出しに合わせて段落を整える、箇条書きを短い文章にするなどの軽い整形",
+      "サイトに載せる長さへの調整（長すぎる場合の要約など）",
+    ],
+    exampleTitle: "例：「軽い文章調整」は制作費に込み",
+    exampleBeforeLabel: "お客様からいただいた原稿",
+    exampleAfterLabel: "サイト用に整えた例",
+    exampleBefore:
+      "Web制作をしています。LPやホームページを作れます。相談してください。",
+    exampleAfter:
+      "個人事業主様・小規模企業様向けに、LP・コーポレートサイトの制作を行っています。目的やご予算に合わせて、デザインから公開まで丁寧にサポートいたします。",
+    exampleNote:
+      "この程度の調整は「入れ込み＋軽い文章整理」として、通常の制作費に含めています。",
+    paidTitle: "別途オプション（有料）になること",
+    paidItems: [
+      "原稿がほとんどない・箇条書きだけしかない",
+      "ヒアリング内容から、主要ページの文章を一から作成する",
+      "キャッチコピー・売り文句・LP の訴求構成まで考える",
+      "SEO を意識した長文原稿を多数ページ分つくる",
+    ],
+    clientNoticeTitle: "お客様への説明（見積・サービス説明用）",
+    clientNotice:
+      "サイト内に掲載する文章は、基本的にお客様よりご支給いただいた内容をもとに制作いたします。文章が短い場合や箇条書きの場合は、こちらで自然な表現に整えて掲載いたします。ただし、事業内容・実績・サービス詳細など正確性が必要な情報については、お客様に最終確認をお願いしております。原稿がない状態から文章作成をご希望の場合は、別途「原稿作成サポート」または「本格コピー作成」としてお見積りいたします。",
+    workflowTitle: "制作の流れ（原稿まわり）",
+    workflowSteps: [
+      "ヒアリングシートで、事業内容・サービス・強み・料金・連絡先などをお書きいただく",
+      "いただいた内容をもとに、必要に応じて AI も活用しながら読みやすい文章に整える",
+      "整えた文章をサイトのデザインに入れ込む",
+      "公開前に、お客様に内容の確認（修正依頼）をお願いする",
+      "OK が出た内容だけを公開する",
+    ],
+    cautionTitle: "注意してほしいこと",
+    cautionIntro:
+      "AI で文章を整えることはできますが、根拠のない内容を勝手に書くことはしません。特に次の項目は必ずお客様確認が必要です。",
+    cautionItems: [
+      "実績・受賞歴・「No.1」などの数値や肩書き",
+      "資格・免許・料金・対応エリア",
+      "保証内容・返金条件",
+      "法律・医療・金融に関わる表現",
+      "お客様の声・レビュー（架空の声は載せない）",
+    ],
+    cautionNote:
+      "「実績多数」「地域で評判」など、確認できない表現は入れません。内容の責任は最終確認いただいたお客様と共有する形です。",
+  },
+  coconalaPacks: {
+    sectionTitle: "ココナラ出品パック",
+    sectionDescription:
+      "出品ページ用の定番パック構成です。読み込むと項目が自動選択され、右の見積に反映されます。",
+    note: "パック表示価格はココナラ出品の目安です。シミュレーター試算との差は、公開サポート・調整工数・丸め等で生じることがあります。",
+    applyButton: "このパック構成を読み込む",
+    items: {
+      templateLp: {
+        title: "高速テンプレLP",
+        targetPrice: "¥59,800",
+        summary: "1ページ・テンプレ調整・基本SEO。WordPress ではなく軽量・高速な LP。",
+        includes: [
+          "シンプルLP 1ページ",
+          "テンプレベースデザイン",
+          "SEO基本設定",
+          "レスポンシブ対応",
+        ],
+      },
+      hpLight: {
+        title: "5ページHPライト",
+        targetPrice: "¥99,800",
+        summary: "Top＋下層4・テンプレ〜準オリジナル・フォーム・基本SEO。",
+        includes: [
+          "小規模コーポレート 5ページ",
+          "テンプレベース",
+          "お問い合わせフォーム",
+          "SEO基本設定",
+        ],
+      },
+      originalCorporate: {
+        title: "オリジナル企業サイト",
+        targetPrice: "¥149,800",
+        summary: "5〜7ページ・Figma オリジナル・フォーム・SEO・公開サポート想定。",
+        includes: [
+          "6ページ＋事業詳細2",
+          "オリジナルデザイン",
+          "フォーム・SEO",
+          "ストック写真選定（少数）",
+        ],
+      },
+      cmsSite: {
+        title: "お知らせ更新つきサイト",
+        targetPrice: "¥199,800",
+        summary: "オリジナル＋簡易CMS。WordPress の重さを避けつつ自分で更新。",
+        includes: [
+          "6ページ＋事業詳細2",
+          "管理画面（簡易CMS）",
+          "フォーム・SEO",
+          "更新マニュアル想定",
+        ],
+      },
+      premiumLp: {
+        title: "反応重視LPプレミアム",
+        targetPrice: "¥129,800〜",
+        summary: "オリジナルLP・構成整理・CTA設計・高品質デザイン。",
+        includes: [
+          "LP 1ページ・高品質デザイン",
+          "フォーム・SEO",
+          "ヒーロー画像選定",
+        ],
+      },
+    },
   },
   sections: {
     basic: {
@@ -56,6 +167,11 @@ export const estimateCopy = {
     options: {
       title: "機能オプション",
       description: "サイトに追加する機能です。必要なものだけチェックしてください。",
+    },
+    content: {
+      title: "サイトの文章・原稿",
+      description:
+        "ホームページに載せる文章を誰が用意するか、どこまでお手伝いするかの説明です。初めての方もここを読めば流れがわかります。",
     },
     launch: {
       title: "公開・運用",
@@ -123,6 +239,7 @@ export const estimateCopy = {
       "制作費 … ページ数・デザイン品質に応じたサイト本体の制作",
       "写真・素材 … ストック写真の選定代行（支給のみの場合は ¥0）",
       "機能オプション … フォーム・SEO など追加機能",
+      "原稿オプション … 原稿作成サポート・本格コピー（下の「文章・原稿」参照）",
       "公開費用 … ドメイン・サーバー公開の初期作業（一回）",
       "保守 … 公開後の月額サポート × 契約月数",
     ],
@@ -256,7 +373,7 @@ export const estimateCopy = {
       premium: {
         title: "高品質",
         summary: "余白・ typography・写真使いまでこだわる上位プラン。",
-        includes: ["制作費が約30%加算", "見せ方・完成度を重視"],
+        includes: ["制作費が約35%加算", "見せ方・完成度を重視"],
       },
     },
     photoMode: {
@@ -320,6 +437,26 @@ export const estimateCopy = {
           "例：shop.example.com / salon.example.com など",
           "共通デザインをベースに拠点ごとに内容を変更",
           "店舗数・拠点数が増えるほど制作・運用が複雑になるため高めのオプション",
+        ],
+      },
+      copySupport: {
+        title: "原稿作成サポート",
+        summary:
+          "ヒアリング内容や箇条書きをもとに、主要ページの掲載用文章を整えます。AI も活用しますが、事実関係はお客様確認後に掲載します。",
+        includes: [
+          "主要ページ（トップ・サービス・会社概要など）の文章作成",
+          "箇条書き・短文からの整形",
+          "公開前のお客様確認フロー込み",
+        ],
+      },
+      copyPremium: {
+        title: "本格コピー・LP構成",
+        summary:
+          "キャッチコピー、訴求の流れ、CTA（行動を促すボタン周り）まで含むコピーライティング。LP や集客ページ向け。",
+        includes: [
+          "キャッチコピー・見出し案",
+          "LP のセクション構成・訴求設計",
+          "SEO を意識した文案（範囲は事前にすり合わせ）",
         ],
       },
     },
@@ -393,8 +530,15 @@ export const sectionGuides = {
   basic: estimateCopy.sections.basic.description,
   pages: estimateCopy.sections.pages.description,
   design: estimateCopy.sections.design.description,
+  content: estimateCopy.sections.content.description,
   options: estimateCopy.sections.options.description,
   launch: estimateCopy.sections.launch.description,
+};
+
+export const contentGuide = {
+  title: estimateCopy.sections.content.title,
+  summary:
+    "基本は「お客様が元になる情報・文章を出す → こちらで整えてサイトに載せる」です。短い原稿の軽い調整は制作費込み。一から書く場合は下のオプションを選んでください。",
 };
 
 export const clientTypeGuide = estimateCopy.guides.clientType;
@@ -433,6 +577,8 @@ export const optionLabels: Record<OptionKey, string> = {
   seo: optionGuide.seo.title,
   cms: optionGuide.cms.title,
   multiStore: optionGuide.multiStore.title,
+  copySupport: optionGuide.copySupport.title,
+  copyPremium: optionGuide.copyPremium.title,
 };
 
 export const maintenanceLabels: Record<
