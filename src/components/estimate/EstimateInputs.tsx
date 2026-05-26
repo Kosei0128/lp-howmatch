@@ -86,11 +86,11 @@ export function EstimateInputs({
           {input.clientType === "senior" && (
             <div className="space-y-4 rounded-xl bg-neutral-50 p-4">
               <FieldHint>
-                割引率はその場で調整できます。デフォルトは料金表の設定から読み込まれます。
+                制作費・機能オプションに同じ割引率が適用されます。公開・保守は別率です。
               </FieldHint>
               <div className="space-y-2">
                 <FieldLabel htmlFor="seniorProductionPercentOff">
-                  制作費割引 {input.seniorProductionPercentOff}% OFF
+                  制作費・オプション割引 {input.seniorProductionPercentOff}% OFF
                 </FieldLabel>
                 <RangeInput
                   id="seniorProductionPercentOff"

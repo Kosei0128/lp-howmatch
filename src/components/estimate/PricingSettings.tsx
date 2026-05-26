@@ -140,7 +140,7 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
         <SettingsGroup title="先輩割（デフォルト % OFF）">
           <SettingsField
             id="senior-production"
-            label="制作費"
+            label="制作費・オプション"
             suffix="% OFF"
             value={config.seniorDiscount.productionPercentOff}
             onChange={(productionPercentOff) =>

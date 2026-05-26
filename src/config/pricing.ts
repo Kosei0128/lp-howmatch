@@ -5,7 +5,7 @@
  * - base: サイト種別ごとのベース制作費（トップ＋共通ヘッダ/footer）
  * - perPage: 固定ページ・事業詳細ページの単価
  * - designMultiplier: デザイン品質による制作費倍率
- * - seniorDiscount.productionPercentOff: 制作費の割引率（45 = 45% OFF）
+ * - seniorDiscount.productionPercentOff: 制作費・オプションの割引率（45 = 45% OFF）
  * - seniorDiscount.launchMaintenancePercentOff: 公開・保守の割引率（10 = 10% OFF）
  * - photos / options / launch / maintenance: 各オプション単価
  */
@@ -34,7 +34,7 @@ export type PricingConfig = {
   perPage: { fixed: number; business: number };
   designMultiplier: { template: number; original: number; premium: number };
   seniorDiscount: {
-    /** 制作費の割引率（45 = 45% OFF → 通常の55%で請求） */
+    /** 制作費・オプションの割引率（45 = 45% OFF → 通常の55%で請求） */
     productionPercentOff: number;
     /** 公開・保守の割引率（10 = 10% OFF） */
     launchMaintenancePercentOff: number;

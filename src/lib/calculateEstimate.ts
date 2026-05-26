@@ -15,7 +15,7 @@ export type ClientType = "normal" | "senior";
 
 export type EstimateInput = {
   clientType: ClientType;
-  /** 制作費の割引率（% OFF）。先輩割選択時のみ有効 */
+  /** 制作費・オプションの割引率（% OFF）。先輩割選択時のみ有効 */
   seniorProductionPercentOff: number;
   /** 公開・保守の割引率（% OFF）。先輩割選択時のみ有効 */
   seniorLaunchMaintenancePercentOff: number;
@@ -68,6 +68,11 @@ function applySeniorToProduction(amount: number, input: EstimateInput): number {
     );
   }
   return amount;
+}
+
+/** 制作費と同率でオプションにも先輩割を適用 */
+function applySeniorToOptions(amount: number, input: EstimateInput): number {
+  return applySeniorToProduction(amount, input);
 }
 
 function applySeniorToLaunchMaintenance(
@@ -263,6 +268,7 @@ export function calculateEstimate(
   }
 
   const productionDiscounted = applySeniorToProduction(subtotalProduction, input);
+  const optionsDiscounted = applySeniorToOptions(subtotalOptions, input);
   const launchDiscounted = applySeniorToLaunchMaintenance(subtotalLaunch, input);
   const maintenanceDiscounted = applySeniorToLaunchMaintenance(
     subtotalMaintenance,
@@ -280,7 +286,7 @@ export function calculateEstimate(
   const totalWithSeniorDiscount =
     productionDiscounted +
     subtotalPhotos +
-    subtotalOptions +
+    optionsDiscounted +
     launchDiscounted +
     domainActual +
     maintenanceDiscounted;
@@ -309,20 +315,20 @@ export function createDefaultEstimateInput(
     seniorProductionPercentOff: config.seniorDiscount.productionPercentOff,
     seniorLaunchMaintenancePercentOff:
       config.seniorDiscount.launchMaintenancePercentOff,
-    siteType: "corporate",
-    pageCount: 8,
-    businessPageCount: 3,
+    siteType: "small",
+    pageCount: 5,
+    businessPageCount: 2,
     designQuality: "original",
     photoMode: "stock",
     heroImageCount: 2,
-    contentImageCount: 6,
+    contentImageCount: 4,
     toneAdjust: false,
     options: {
-      contactForm: false,
+      contactForm: true,
       faq: false,
       news: false,
       english: false,
-      seo: false,
+      seo: true,
       cms: false,
       multiStore: false,
     },
@@ -330,7 +336,7 @@ export function createDefaultEstimateInput(
     vercelSetup: false,
     launchBundle: false,
     domainTld: "jp",
-    maintenancePlan: "standard",
+    maintenancePlan: "none",
     maintenanceMonths: 12,
   };
 }
@@ -381,7 +387,7 @@ export function buildEstimateMemo(
 
   if (isSenior) {
     lines.push(
-      `先輩割: 制作費 ${input.seniorProductionPercentOff}% OFF / 公開・保守 ${input.seniorLaunchMaintenancePercentOff}% OFF`,
+      `先輩割: 制作費・オプション ${input.seniorProductionPercentOff}% OFF / 公開・保守 ${input.seniorLaunchMaintenancePercentOff}% OFF`,
     );
   }
 

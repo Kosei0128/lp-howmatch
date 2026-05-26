@@ -129,6 +129,13 @@ export function EstimateSummary({
     ? Math.round(breakdown.subtotalMaintenance * launchMaintenanceMultiplier)
     : breakdown.subtotalMaintenance;
 
+  const optionsDisplay = isSenior
+    ? Math.round(
+        breakdown.subtotalOptions *
+          percentOffToMultiplier(input.seniorProductionPercentOff),
+      )
+    : breakdown.subtotalOptions;
+
   if (variant === "compact") {
     return (
       <div className="flex items-center justify-between gap-3">
@@ -170,7 +177,7 @@ export function EstimateSummary({
         <div className="divide-y divide-neutral-100">
           <SummaryRow label="制作費（初期）" amount={productionDisplay} />
           <SummaryRow label="写真・素材代行" amount={breakdown.subtotalPhotos} />
-          <SummaryRow label="機能オプション" amount={breakdown.subtotalOptions} />
+          <SummaryRow label="機能オプション" amount={optionsDisplay} />
           <SummaryRow label="公開費用（一回）" amount={launchDisplay} />
           {breakdown.domainActual > 0 && (
             <SummaryRow
@@ -200,7 +207,7 @@ export function EstimateSummary({
                 </span>
               </div>
               <p className="text-xs text-neutral-500">
-                制作費 {input.seniorProductionPercentOff}% OFF / 公開・保守{" "}
+                制作費・オプション {input.seniorProductionPercentOff}% OFF / 公開・保守{" "}
                 {input.seniorLaunchMaintenancePercentOff}% OFF
               </p>
             </div>
