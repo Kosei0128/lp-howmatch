@@ -4,15 +4,28 @@ import {
   CheckboxRow,
   FieldHint,
   FieldLabel,
+  InfoPanel,
   NumberInput,
-  RadioGroup,
+  PlanCard,
   RangeInput,
   Section,
   SelectInput,
 } from "@/components/estimate/estimate-ui";
 import {
-  designQualityLabels,
-  maintenanceLabels,
+  businessPageHint,
+  clientTypeGuide,
+  designQualityGuide,
+  launchGuide,
+  maintenanceGuide,
+  maintenanceMonthsHint,
+  optionGuide,
+  pageCountHint,
+  photoModeGuide,
+  sectionGuides,
+  siteTypeGuide,
+  toneAdjustHint,
+} from "@/config/estimateGuide";
+import {
   optionLabels,
   siteTypeLabels,
   type DesignQuality,
@@ -39,6 +52,13 @@ export function EstimateInputs({
   onApplyPreset,
 }: EstimateInputsProps) {
   const optionKeys = Object.keys(optionLabels) as OptionKey[];
+  const maintenancePlans: MaintenancePlan[] = [
+    "none",
+    "light",
+    "standard",
+    "full",
+  ];
+  const selectedSiteGuide = siteTypeGuide[input.siteType];
 
   const toggleOption = (key: OptionKey) => {
     onChange({
@@ -68,19 +88,36 @@ export function EstimateInputs({
       </details>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
-        <Section title="基本情報">
+        <Section title="基本情報" description={sectionGuides.basic}>
           <div className="space-y-2">
             <FieldLabel>クライアント種別</FieldLabel>
-            <RadioGroup<ClientType>
-              name="clientType"
-              value={input.clientType}
-              layout="inline"
-              options={[
-                { value: "normal", label: "通常" },
-                { value: "senior", label: "先輩・知人割" },
-              ]}
-              onChange={(clientType) => onChange({ clientType })}
-            />
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(["normal", "senior"] as ClientType[]).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => onChange({ clientType: type })}
+                  className={`rounded-xl border p-3 text-left transition ${
+                    input.clientType === type
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 bg-white hover:border-neutral-400"
+                  }`}
+                >
+                  <span className="block text-sm font-medium">
+                    {clientTypeGuide[type].title}
+                  </span>
+                  <span
+                    className={`mt-1 block text-xs leading-relaxed ${
+                      input.clientType === type
+                        ? "text-neutral-200"
+                        : "text-neutral-600"
+                    }`}
+                  >
+                    {clientTypeGuide[type].summary}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {input.clientType === "senior" && (
@@ -142,14 +179,19 @@ export function EstimateInputs({
                 </option>
               ))}
             </SelectInput>
+            <InfoPanel
+              title={selectedSiteGuide.title}
+              items={[selectedSiteGuide.summary, ...(selectedSiteGuide.includes ?? [])]}
+            />
           </div>
         </Section>
 
-        <Section title="ページ・規模">
+        <Section title="ページ・規模" description={sectionGuides.pages}>
           <div className="space-y-2">
             <FieldLabel htmlFor="pageCount">
               固定ページ {input.pageCount} ページ
             </FieldLabel>
+            <FieldHint>{pageCountHint}</FieldHint>
             <RangeInput
               id="pageCount"
               min={1}
@@ -161,6 +203,7 @@ export function EstimateInputs({
 
           <div className="space-y-2">
             <FieldLabel htmlFor="businessPageCount">事業詳細ページ数</FieldLabel>
+            <FieldHint>{businessPageHint}</FieldHint>
             <NumberInput
               id="businessPageCount"
               min={0}
@@ -176,32 +219,49 @@ export function EstimateInputs({
           </div>
         </Section>
 
-        <Section title="デザイン・素材">
+        <Section title="デザイン・素材" description={sectionGuides.design}>
           <div className="space-y-2">
             <FieldLabel>デザイン品質</FieldLabel>
-            <RadioGroup<DesignQuality>
-              name="designQuality"
-              value={input.designQuality}
-              layout="stack"
-              options={(Object.keys(designQualityLabels) as DesignQuality[]).map(
-                (key) => ({ value: key, label: designQualityLabels[key] }),
+            <div className="grid gap-2">
+              {(Object.keys(designQualityGuide) as DesignQuality[]).map(
+                (key) => {
+                  const guide = designQualityGuide[key];
+                  return (
+                    <PlanCard
+                      key={key}
+                      name="designQuality"
+                      value={key}
+                      selected={input.designQuality === key}
+                      title={guide.title}
+                      summary={guide.summary}
+                      includes={guide.includes}
+                      onChange={(designQuality) => onChange({ designQuality })}
+                    />
+                  );
+                },
               )}
-              onChange={(designQuality) => onChange({ designQuality })}
-            />
+            </div>
           </div>
 
           <div className="space-y-2">
             <FieldLabel>写真・ビジュアル素材</FieldLabel>
-            <RadioGroup<PhotoMaterialMode>
-              name="photoMode"
-              value={input.photoMode}
-              layout="stack"
-              options={[
-                { value: "client", label: "クライアント支給のみ（追加 ¥0）" },
-                { value: "stock", label: "ストックフォト選定代行" },
-              ]}
-              onChange={(photoMode) => onChange({ photoMode })}
-            />
+            <div className="grid gap-2">
+              {(["client", "stock"] as PhotoMaterialMode[]).map((mode) => {
+                const guide = photoModeGuide[mode];
+                return (
+                  <PlanCard
+                    key={mode}
+                    name="photoMode"
+                    value={mode}
+                    selected={input.photoMode === mode}
+                    title={guide.title}
+                    summary={guide.summary}
+                    includes={guide.includes}
+                    onChange={(photoMode) => onChange({ photoMode })}
+                  />
+                );
+              })}
+            </div>
           </div>
 
           {input.photoMode === "stock" && (
@@ -210,6 +270,7 @@ export function EstimateInputs({
                 <FieldLabel htmlFor="heroImageCount">
                   背景・ヒーロー（{input.heroImageCount} 枚）
                 </FieldLabel>
+                <FieldHint>トップや各ページ上部の大きな印象画像です。</FieldHint>
                 <RangeInput
                   id="heroImageCount"
                   min={0}
@@ -222,6 +283,7 @@ export function EstimateInputs({
                 <FieldLabel htmlFor="contentImageCount">
                   事業・コンテンツ（{input.contentImageCount} 枚）
                 </FieldLabel>
+                <FieldHint>サービス紹介や説明ブロックで使う写真です。</FieldHint>
                 <RangeInput
                   id="contentImageCount"
                   min={0}
@@ -235,62 +297,63 @@ export function EstimateInputs({
               <CheckboxRow
                 checked={input.toneAdjust}
                 onChange={(toneAdjust) => onChange({ toneAdjust })}
-              >
-                加工・トーン合わせ（+
-                {pricingConfig.photos.toneAdjust.toLocaleString()} 円）
-              </CheckboxRow>
+                title={`加工・トーン合わせ（+${pricingConfig.photos.toneAdjust.toLocaleString()} 円）`}
+                description={toneAdjustHint}
+              />
             </div>
           )}
         </Section>
 
-        <Section title="機能オプション">
+        <Section title="機能オプション" description={sectionGuides.options}>
           <div className="grid gap-2">
-            {optionKeys.map((key) => (
-              <CheckboxRow
-                key={key}
-                checked={input.options[key]}
-                onChange={() => toggleOption(key)}
-              >
-                {optionLabels[key]}
-                <span className="ml-1 text-neutral-500">
-                  (+{pricingConfig.options[key].toLocaleString()} 円)
-                </span>
-              </CheckboxRow>
-            ))}
+            {optionKeys.map((key) => {
+              const guide = optionGuide[key];
+              return (
+                <CheckboxRow
+                  key={key}
+                  checked={input.options[key]}
+                  onChange={() => toggleOption(key)}
+                  title={`${guide.title}（+${pricingConfig.options[key].toLocaleString()} 円）`}
+                  description={guide.summary}
+                  includes={guide.includes}
+                />
+              );
+            })}
           </div>
         </Section>
 
-        <Section title="公開・運用">
+        <Section title="公開・運用" description={sectionGuides.launch}>
           <CheckboxRow
             checked={input.launchBundle}
             onChange={(launchBundle) => onChange({ launchBundle })}
-          >
-            公開セット（まとめて{" "}
-            {pricingConfig.launch.launchBundle.toLocaleString()} 円）
-          </CheckboxRow>
+            title={`${launchGuide.bundle.title}（+${pricingConfig.launch.launchBundle.toLocaleString()} 円）`}
+            description={launchGuide.bundle.summary}
+            includes={launchGuide.bundle.includes}
+          />
 
           {!input.launchBundle && (
             <div className="space-y-2">
               <CheckboxRow
                 checked={input.domainProxy}
                 onChange={(domainProxy) => onChange({ domainProxy })}
-              >
-                ドメイン取得代行（
-                {pricingConfig.launch.domainProxy.toLocaleString()} 円）
-              </CheckboxRow>
+                title={`${launchGuide.domainProxy.title}（+${pricingConfig.launch.domainProxy.toLocaleString()} 円）`}
+                description={launchGuide.domainProxy.summary}
+              />
               <CheckboxRow
                 checked={input.vercelSetup}
                 onChange={(vercelSetup) => onChange({ vercelSetup })}
-              >
-                Vercel公開・DNS・SSL（
-                {pricingConfig.launch.vercelSetup.toLocaleString()} 円）
-              </CheckboxRow>
+                title={`${launchGuide.vercelSetup.title}（+${pricingConfig.launch.vercelSetup.toLocaleString()} 円）`}
+                description={launchGuide.vercelSetup.summary}
+              />
             </div>
           )}
 
           {(input.domainProxy || input.launchBundle) && (
             <div className="space-y-2">
               <FieldLabel htmlFor="domainTld">ドメイン TLD</FieldLabel>
+              <FieldHint>
+                サイトのアドレス末尾（.jp や .com）。実費はレジストラの年間料金で、別途加算されます。
+              </FieldHint>
               <SelectInput
                 id="domainTld"
                 value={input.domainTld}
@@ -310,26 +373,37 @@ export function EstimateInputs({
             </div>
           )}
 
-          <div className="space-y-2">
-            <FieldLabel>保守プラン</FieldLabel>
-            <RadioGroup<MaintenancePlan>
-              name="maintenancePlan"
-              value={input.maintenancePlan}
-              layout="stack"
-              options={[
-                { value: "none", label: "なし" },
-                ...(
-                  Object.keys(maintenanceLabels) as Exclude<
-                    MaintenancePlan,
-                    "none"
-                  >[]
-                ).map((key) => ({
-                  value: key,
-                  label: `${maintenanceLabels[key]}（${pricingConfig.maintenance[key].toLocaleString()} 円/月）`,
-                })),
-              ]}
-              onChange={(maintenancePlan) => onChange({ maintenancePlan })}
-            />
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <FieldLabel>保守プラン（公開後のサポート）</FieldLabel>
+              <FieldHint>
+                サイト公開後、更新・監視・障害対応などをどこまで任せるか選びます。内容の違いは各プランをご確認ください。
+              </FieldHint>
+            </div>
+            <div className="grid gap-2">
+              {maintenancePlans.map((plan) => {
+                const guide = maintenanceGuide[plan];
+                const priceLabel =
+                  plan === "none"
+                    ? "契約なし"
+                    : `${pricingConfig.maintenance[plan].toLocaleString()} 円/月`;
+                return (
+                  <PlanCard
+                    key={plan}
+                    name="maintenancePlan"
+                    value={plan}
+                    selected={input.maintenancePlan === plan}
+                    title={guide.title}
+                    priceLabel={priceLabel}
+                    summary={guide.summary}
+                    includes={guide.includes}
+                    onChange={(maintenancePlan) =>
+                      onChange({ maintenancePlan })
+                    }
+                  />
+                );
+              })}
+            </div>
           </div>
 
           {input.maintenancePlan !== "none" && (
@@ -337,6 +411,7 @@ export function EstimateInputs({
               <FieldLabel htmlFor="maintenanceMonths">
                 保守期間 {input.maintenanceMonths} ヶ月
               </FieldLabel>
+              <FieldHint>{maintenanceMonthsHint}</FieldHint>
               <RangeInput
                 id="maintenanceMonths"
                 min={1}

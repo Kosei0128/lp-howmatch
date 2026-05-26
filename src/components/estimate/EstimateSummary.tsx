@@ -1,5 +1,7 @@
 "use client";
 
+import { InfoPanel } from "@/components/estimate/estimate-ui";
+import { howToReadSummary } from "@/config/estimateGuide";
 import { percentOffToMultiplier } from "@/config/pricing";
 import {
   formatYen,
@@ -172,7 +174,10 @@ export function EstimateSummary({
   return (
     <div className="space-y-4 lg:space-y-6">
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="font-en mb-4 text-lg font-medium">見積サマリー</h2>
+        <h2 className="font-en mb-1 text-lg font-medium">見積サマリー</h2>
+        <p className="mb-4 text-xs leading-relaxed text-neutral-500">
+          左で選んだ内容がリアルタイムで反映されます。税抜の目安金額です。
+        </p>
 
         <div className="divide-y divide-neutral-100">
           <SummaryRow label="制作費（初期）" amount={productionDisplay} />
@@ -237,6 +242,10 @@ export function EstimateSummary({
             リセット
           </button>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
+        <InfoPanel title="見積の読み方" items={howToReadSummary} />
       </div>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">

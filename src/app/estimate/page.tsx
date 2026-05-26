@@ -16,8 +16,9 @@ export default function EstimatePage() {
             Web制作 見積シミュレーター
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600">
-            ページ数・オプション・写真代行・公開・保守を選ぶと、金額が即座に更新されます。
-            先輩・知人割トグルで Before / After をその場で確認できます。
+            Webサイト制作の見積もりを、その場で試算できるツールです。
+            項目ごとに説明を付けているので、初めての方でも内容を確認しながら選べます。
+            選択を変えると右の合計がすぐ更新されます。
           </p>
         </header>
 

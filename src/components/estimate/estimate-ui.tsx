@@ -4,16 +4,21 @@ import type { ReactNode } from "react";
 
 export function Section({
   title,
+  description,
   children,
 }: {
   title: string;
+  description?: string;
   children: ReactNode;
 }) {
   return (
     <section className="space-y-4 border-b border-neutral-200 pb-6 sm:pb-8">
-      <h2 className="font-en text-xs font-medium tracking-wide text-neutral-500 uppercase sm:text-sm">
-        {title}
-      </h2>
+      <div className="space-y-1">
+        <h2 className="font-en text-xs font-medium tracking-wide text-neutral-500 uppercase sm:text-sm">
+          {title}
+        </h2>
+        {description ? <FieldHint>{description}</FieldHint> : null}
+      </div>
       {children}
     </section>
   );
@@ -172,22 +177,152 @@ export function RadioGroup<T extends string>({
 export function CheckboxRow({
   checked,
   onChange,
+  title,
+  description,
+  includes,
   children,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  children: ReactNode;
+  title?: string;
+  description?: string;
+  includes?: readonly string[];
+  children?: ReactNode;
 }) {
   return (
-    <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm leading-snug active:bg-neutral-50">
+    <label
+      className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-sm leading-snug transition active:bg-neutral-50 ${
+        checked
+          ? "border-neutral-900 bg-neutral-50"
+          : "border-neutral-200 bg-white"
+      }`}
+    >
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 h-5 w-5 shrink-0 rounded border-neutral-300 accent-neutral-900"
       />
-      <span className="flex-1">{children}</span>
+      <span className="min-w-0 flex-1 space-y-1">
+        {title ? (
+          <span className="block font-medium text-neutral-900">{title}</span>
+        ) : null}
+        {description ? (
+          <span className="block text-xs leading-relaxed text-neutral-600">
+            {description}
+          </span>
+        ) : null}
+        {includes && includes.length > 0 ? (
+          <ul className="mt-1 space-y-0.5 text-xs text-neutral-500">
+            {includes.map((item) => (
+              <li key={item} className="flex gap-1.5">
+                <span aria-hidden className="shrink-0">
+                  ·
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {children}
+      </span>
     </label>
+  );
+}
+
+export function PlanCard<T extends string>({
+  name,
+  value,
+  selected,
+  title,
+  priceLabel,
+  summary,
+  includes,
+  onChange,
+}: {
+  name: string;
+  value: T;
+  selected: boolean;
+  title: string;
+  priceLabel?: string;
+  summary: string;
+  includes?: readonly string[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <label
+      className={`block cursor-pointer rounded-xl border p-4 transition active:scale-[0.99] ${
+        selected
+          ? "border-neutral-900 bg-neutral-900 text-white"
+          : "border-neutral-200 bg-white hover:border-neutral-400"
+      }`}
+    >
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={selected}
+        onChange={() => onChange(value)}
+        className="sr-only"
+      />
+      <div className="flex items-start justify-between gap-3">
+        <span className="text-sm font-semibold">{title}</span>
+        {priceLabel ? (
+          <span
+            className={`shrink-0 text-xs font-medium tabular-nums ${
+              selected ? "text-neutral-200" : "text-neutral-500"
+            }`}
+          >
+            {priceLabel}
+          </span>
+        ) : null}
+      </div>
+      <p
+        className={`mt-2 text-xs leading-relaxed ${
+          selected ? "text-neutral-200" : "text-neutral-600"
+        }`}
+      >
+        {summary}
+      </p>
+      {includes && includes.length > 0 ? (
+        <ul className="mt-3 space-y-1">
+          {includes.map((item) => (
+            <li
+              key={item}
+              className={`flex gap-2 text-xs leading-relaxed ${
+                selected ? "text-neutral-100" : "text-neutral-500"
+              }`}
+            >
+              <span aria-hidden className="shrink-0">
+                ✓
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </label>
+  );
+}
+
+export function InfoPanel({
+  title,
+  items,
+}: {
+  title: string;
+  items: string[];
+}) {
+  return (
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+      <p className="text-xs font-medium text-neutral-800">{title}</p>
+      <ul className="mt-2 space-y-1">
+        {items.map((item) => (
+          <li key={item} className="text-xs leading-relaxed text-neutral-600">
+            · {item}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
