@@ -270,14 +270,14 @@ export function PricingSettings({ config, onChange }: PricingSettingsProps) {
             }
           />
           <SettingsField
-            id="domain-jp"
-            label={copy.fields.domainJp}
-            value={config.launch.domainActual.jp}
-            onChange={(jp) =>
+            id="domain-cojp"
+            label={copy.fields.domainCoJp}
+            value={config.launch.domainActual["co.jp"]}
+            onChange={(cojp) =>
               patch(
                 updateNested(config, "launch", {
                   ...config.launch,
-                  domainActual: { ...config.launch.domainActual, jp },
+                  domainActual: { ...config.launch.domainActual, "co.jp": cojp },
                 }),
               )
             }

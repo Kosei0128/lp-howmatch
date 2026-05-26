@@ -340,7 +340,7 @@ export function createDefaultEstimateInput(
     domainProxy: false,
     vercelSetup: false,
     launchBundle: false,
-    domainTld: "jp",
+    domainTld: "co.jp",
     maintenancePlan: "none",
     maintenanceMonths: 12,
   };

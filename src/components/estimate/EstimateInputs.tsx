@@ -371,10 +371,10 @@ export function EstimateInputs({
                   onChange({ domainTld: value as DomainTld })
                 }
               >
-                <option value="jp">
+                <option value="co.jp">
                   {domainActualOptionLabel(
-                    "jp",
-                    pricingConfig.launch.domainActual.jp,
+                    "co.jp",
+                    pricingConfig.launch.domainActual["co.jp"],
                   )}
                 </option>
                 <option value="com">

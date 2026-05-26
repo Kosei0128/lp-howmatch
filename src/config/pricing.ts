@@ -18,7 +18,7 @@ export type PhotoMaterialMode = "client" | "stock";
 
 export type MaintenancePlan = "none" | "light" | "standard" | "full";
 
-export type DomainTld = "jp" | "com";
+export type DomainTld = "co.jp" | "com";
 
 export type OptionKey =
   | "contactForm"
@@ -51,7 +51,7 @@ export type PricingConfig = {
     domainProxy: number;
     vercelSetup: number;
     launchBundle: number;
-    domainActual: { jp: number; com: number };
+    domainActual: { "co.jp": number; com: number };
   };
   maintenance: { none: 0; light: number; standard: number; full: number };
 };
@@ -89,13 +89,13 @@ export const pricing: PricingConfig = {
     english: 80000,
     seo: 15000,
     cms: 50000,
-    multiStore: 80000,
+    multiStore: 50000,
   },
   launch: {
     domainProxy: 8000,
     vercelSetup: 15000,
     launchBundle: 20000,
-    domainActual: { jp: 3500, com: 2000 },
+    domainActual: { "co.jp": 5000, com: 2000 },
   },
   maintenance: {
     none: 0,

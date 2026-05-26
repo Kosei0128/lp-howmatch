@@ -94,7 +94,7 @@ export const estimateCopy = {
     toneAdjust:
       "選んだ写真の明るさ・色味をサイト全体のトーンに合わせて調整します。",
     domainTld:
-      "サイトのアドレス末尾（.jp や .com）。実費はレジストラの年間料金で、別途加算されます。",
+      "サイトのアドレス末尾（.co.jp や .com）。実費はレジストラの年間料金で、別途加算されます。",
     maintenancePlan:
       "サイト公開後、更新・監視・障害対応などをどこまで任せるか選びます。内容の違いは各プランをご確認ください。",
     maintenanceMonths:
@@ -191,7 +191,7 @@ export const estimateCopy = {
       domainProxy: "ドメイン取得代行",
       vercelSetup: "Vercel設定",
       launchBundle: "公開セット",
-      domainJp: "ドメイン実費 .jp（年）",
+      domainCoJp: "ドメイン実費 .co.jp（年）",
       domainCom: "ドメイン実費 .com（年）",
       maintenance: "保守",
     },
