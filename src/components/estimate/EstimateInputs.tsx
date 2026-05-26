@@ -202,7 +202,7 @@ export function EstimateInputs({
             <FieldHint>{pageCountHint}</FieldHint>
             <RangeInput
               id="pageCount"
-              min={1}
+              min={0}
               max={20}
               value={input.pageCount}
               onChange={(pageCount) => onChange({ pageCount })}

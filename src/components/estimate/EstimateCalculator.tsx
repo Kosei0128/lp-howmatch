@@ -6,7 +6,7 @@ import { PricingSettings } from "@/components/estimate/PricingSettings";
 import {
   buildEstimateMemo,
   calculateEstimate,
-  createDefaultEstimateInput,
+  createEmptyEstimateInput,
   createLuxeHoldingsPreset,
   type EstimateInput,
 } from "@/lib/calculateEstimate";
@@ -23,7 +23,7 @@ export function EstimateCalculator() {
     clonePricingConfig(),
   );
   const [input, setInput] = useState<EstimateInput>(() =>
-    createDefaultEstimateInput(),
+    createEmptyEstimateInput(),
   );
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
   const [ready, setReady] = useState(false);
@@ -31,7 +31,7 @@ export function EstimateCalculator() {
   useEffect(() => {
     const saved = loadPricingConfig();
     setPricingConfig(saved);
-    setInput(createDefaultEstimateInput(saved));
+    setInput(createEmptyEstimateInput(saved));
     setReady(true);
   }, []);
 
@@ -53,7 +53,7 @@ export function EstimateCalculator() {
   };
 
   const handleReset = () => {
-    setInput(createDefaultEstimateInput(pricingConfig));
+    setInput(createEmptyEstimateInput(pricingConfig));
     setCopyStatus("idle");
   };
 

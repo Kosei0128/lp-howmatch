@@ -88,7 +88,7 @@ export const estimateCopy = {
     seniorDiscount:
       "制作費・機能オプションに同じ割引率が適用されます。公開・保守は別率です。",
     pageCount:
-      "トップページを含む総ページ数です。例：トップ・会社概要・サービス・問い合わせ = 4ページ。",
+      "トップページを含む総ページ数です。0のときは見積未確定（0円）。例：トップ・会社概要・サービス・問い合わせ = 4ページ。",
     businessPageCount:
       "事業・サービス・商品ごとに1ページずつ作る場合の枚数です。例：事業A・事業B・事業C = 3ページ。",
     heroImages: "トップや各ページ上部の大きな印象画像です。",
@@ -447,6 +447,7 @@ export const maintenanceLabels: Record<
 // --- 動的文言ヘルパー ---
 
 export function pageCountLabel(count: number): string {
+  if (count === 0) return "固定ページ（未選択・0円）";
   return `固定ページ ${count} ページ`;
 }
 

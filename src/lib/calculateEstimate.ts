@@ -99,10 +99,27 @@ function applySeniorToLaunchMaintenance(
   return amount;
 }
 
+const emptyBreakdown = (): EstimateBreakdown => ({
+  lines: [],
+  subtotalProduction: 0,
+  subtotalPhotos: 0,
+  subtotalOptions: 0,
+  subtotalLaunch: 0,
+  domainActual: 0,
+  subtotalMaintenance: 0,
+  total: 0,
+  totalWithSeniorDiscount: 0,
+  seniorDiscountAmount: 0,
+});
+
 export function calculateEstimate(
   input: EstimateInput,
   config: PricingConfig = pricing,
 ): EstimateBreakdown {
+  if (input.pageCount < 1) {
+    return emptyBreakdown();
+  }
+
   const lines: EstimateLine[] = [];
 
   const base = getBasePrice(input.siteType, config);
@@ -312,7 +329,18 @@ export function calculateEstimate(
   };
 }
 
-export function createDefaultEstimateInput(
+const emptyOptions = (): Record<OptionKey, boolean> => ({
+  contactForm: false,
+  faq: false,
+  news: false,
+  english: false,
+  seo: false,
+  cms: false,
+  multiStore: false,
+});
+
+/** 初期表示・リセット用（ページ未選択 = 0円） */
+export function createEmptyEstimateInput(
   config: PricingConfig = pricing,
 ): EstimateInput {
   return {
@@ -321,28 +349,39 @@ export function createDefaultEstimateInput(
     seniorLaunchMaintenancePercentOff:
       config.seniorDiscount.launchMaintenancePercentOff,
     siteType: "small",
-    pageCount: 5,
-    businessPageCount: 2,
+    pageCount: 0,
+    businessPageCount: 0,
     designQuality: "original",
-    photoMode: "stock",
-    heroImageCount: 2,
-    contentImageCount: 4,
+    photoMode: "client",
+    heroImageCount: 0,
+    contentImageCount: 0,
     toneAdjust: false,
-    options: {
-      contactForm: true,
-      faq: false,
-      news: false,
-      english: false,
-      seo: true,
-      cms: false,
-      multiStore: false,
-    },
+    options: emptyOptions(),
     domainProxy: false,
     vercelSetup: false,
     launchBundle: false,
     domainTld: "co.jp",
     maintenancePlan: "none",
     maintenanceMonths: 12,
+  };
+}
+
+/** 標準サンプル構成（LUXE プリセット等のベース） */
+export function createDefaultEstimateInput(
+  config: PricingConfig = pricing,
+): EstimateInput {
+  return {
+    ...createEmptyEstimateInput(config),
+    pageCount: 5,
+    businessPageCount: 2,
+    photoMode: "stock",
+    heroImageCount: 2,
+    contentImageCount: 4,
+    options: {
+      ...emptyOptions(),
+      contactForm: true,
+      seo: true,
+    },
   };
 }
 
@@ -366,7 +405,7 @@ export function createLuxeHoldingsPreset(
   };
 }
 
-export const defaultEstimateInput = createDefaultEstimateInput();
+export const defaultEstimateInput = createEmptyEstimateInput();
 export const luxeHoldingsPreset = createLuxeHoldingsPreset();
 
 export function formatYen(amount: number): string {
