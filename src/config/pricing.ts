@@ -58,12 +58,12 @@ export type PricingConfig = {
 
 export const pricing: PricingConfig = {
   base: {
-    lp: 60000,
-    small: 70000,
-    corporate: 80000,
+    lp: 40000,
+    small: 50000,
+    corporate: 60000,
   },
   perPage: {
-    fixed: 15000,
+    fixed: 10000,
     business: 12000,
   },
   designMultiplier: {
@@ -80,7 +80,7 @@ export const pricing: PricingConfig = {
   photos: {
     heroPerImage: 5000,
     contentPerImage: 3000,
-    toneAdjust: 10000,
+    toneAdjust: 5000,
   },
   options: {
     contactForm: 20000,
